@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed the Baby</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            overflow: hidden;
+            background: #FFE5B4;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #webcam-feed {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: blur(5px) brightness(0.7);
+        }
+
+        #room-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3;
+            z-index: 1;
+        }
+
+        #baby-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+
+        #baby-face {
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 8px solid #FFB6C1;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transition: filter 0.3s ease, transform 0.3s ease;
+        }
+
+        #baby-face.eating {
+            filter: brightness(1.2);
+            transform: scale(1.05);
+        }
+
+        #baby-face.clean {
+            filter: brightness(1.3) saturate(1.2);
+            transform: scale(1.1);
+        }
+
+        #baby-face.messy {
+            filter: contrast(0.9) brightness(0.95);
+        }
+
+        #expression-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 120px;
+            transition: all 0.3s ease;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+        }
+
+        #mouth-overlay {
+            position: absolute;
+            bottom: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            background: #8B4513;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+
+        #mouth-overlay.open {
+            opacity: 1;
+        }
+
+        #food-particle {
+            position: absolute;
+            font-size: 40px;
+            opacity: 0;
+            transition: all 0.5s ease;
+            pointer-events: none;
+        }
+
+        #feedback-text {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #FF6B6B;
+            text-shadow: 3px 3px 6px rgba(255, 255, 255, 0.8);
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 20;
+            white-space: nowrap;
+        }
+
+        #feedback-text.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-20px);
+        }
+
+        #controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .status-item {
+            margin: 5px 0;
+            padding: 5px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+
+        .active {
+            background: #90EE90 !important;
+            font-weight: bold;
+        }
+
+        #hidden-canvas {
+            display: none;
+        }
+
+        #messiness-meter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .meter-bar {
+            width: 200px;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4CAF50, #FFC107, #FF5722);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <video id="webcam-feed" autoplay playsinline muted></video>
+        <img id="room-background" src="room.jpg" alt="Room">
+
+        <div id="baby-container">
+            <img id="baby-face" src="baby.jpg" alt="Baby">
+            <div id="expression-overlay">😐</div>
+            <div id="mouth-overlay">😮</div>
+        </div>
+
+        <div id="food-particle">🍼</div>
+        <div id="feedback-text"></div>
+
+        <div id="messiness-meter">
+            Messiness: <span id="mess-value">0%</span>
+            <div class="meter-bar">
+                <div class="meter-fill" id="mess-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div id="controls">
+            <h3>Feed the Baby Game</h3>
+            <button id="start-btn">Start Game</button>
+            <button id="stop-btn" disabled>Stop Game</button>
+            <div id="status">
+                <div class="status-item">🎤 Microphone: <span id="mic-status">Inactive</span></div>
+                <div class="status-item">📷 Webcam: <span id="cam-status">Inactive</span></div>
+                <div class="status-item">🔊 Sound Level: <span id="sound-level">0</span></div>
+                <div class="status-item">💡 Brightness: <span id="brightness-level">0</span></div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="hidden-canvas"></canvas>
+
+    <script>
+        // Game state
+        let isRunning = false;
+        let audioContext = null;
+        let analyser = null;
+        let microphone = null;
+        let webcamStream = null;
+        let animationFrameId = null;
+        let currentState = 'neutral'; // neutral, eating, clean, messy
+        let messinessLevel = 0;
+        let lastFeedTime = 0;
+
+        // DOM elements
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const webcamFeed = document.getElementById('webcam-feed');
+        const babyFace = document.getElementById('baby-face');
+        const expressionOverlay = document.getElementById('expression-overlay');
+        const mouthOverlay = document.getElementById('mouth-overlay');
+        const foodParticle = document.getElementById('food-particle');
+        const feedbackText = document.getElementById('feedback-text');
+        const hiddenCanvas = document.getElementById('hidden-canvas');
+        const ctx = hiddenCanvas.getContext('2d');
+
+        // Status elements
+        const micStatus = document.getElementById('mic-status');
+        const camStatus = document.getElementById('cam-status');
+        const soundLevelSpan = document.getElementById('sound-level');
+        const brightnessLevelSpan = document.getElementById('brightness-level');
+        const messValue = document.getElementById('mess-value');
+        const messFill = document.getElementById('mess-fill');
+
+        // Thresholds
+        const SOUND_THRESHOLD = 30; // Adjust sensitivity (0-100)
+        const BRIGHTNESS_THRESHOLD = 180; // Brightness for white detection (0-255)
+        const WHITE_AREA_THRESHOLD = 0.3; // 30% of screen should be white
+
+        // Initialize game
+        async function startGame() {
+            try {
+                // Start webcam
+                webcamStream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 640, height: 480 },
+                    audio: true
+                });
+                webcamFeed.srcObject = webcamStream;
+                camStatus.textContent = 'Active';
+                camStatus.parentElement.classList.add('active');
+
+                // Setup canvas for video analysis
+                hiddenCanvas.width = 160;
+                hiddenCanvas.height = 120;
+
+                // Start microphone
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+
+                microphone = audioContext.createMediaStreamSource(webcamStream);
+                microphone.connect(analyser);
+
+                micStatus.textContent = 'Active';
+                micStatus.parentElement.classList.add('active');
+
+                isRunning = true;
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+
+                // Start game loop
+                gameLoop();
+                showFeedback('Game Started! Say "Ah" to feed!');
+            } catch (error) {
+                console.error('Error starting game:', error);
+                alert('Please allow microphone and camera access to play the game!');
+            }
+        }
+
+        function stopGame() {
+            isRunning = false;
+
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+            }
+
+            if (audioContext) {
+                audioContext.close();
+            }
+
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+
+            micStatus.textContent = 'Inactive';
+            micStatus.parentElement.classList.remove('active');
+            camStatus.textContent = 'Inactive';
+            camStatus.parentElement.classList.remove('active');
+
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            showFeedback('Game Stopped');
+        }
+
+        function gameLoop() {
+            if (!isRunning) return;
+
+            // Check sound level
+            const soundLevel = getSoundLevel();
+            soundLevelSpan.textContent = soundLevel;
+
+            // Check brightness (white detection)
+            const brightness = getBrightness();
+            brightnessLevelSpan.textContent = brightness.toFixed(0);
+
+            // Handle feeding
+            if (soundLevel > SOUND_THRESHOLD) {
+                handleFeeding();
+            } else {
+                if (currentState === 'eating') {
+                    returnToNeutral();
+                }
+            }
+
+            // Handle cleaning
+            if (brightness > BRIGHTNESS_THRESHOLD && messinessLevel > 0) {
+                handleCleaning();
+            }
+
+            // Update messiness display
+            updateMessinessDisplay();
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        function getSoundLevel() {
+            if (!analyser) return 0;
+
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(dataArray);
+
+            const average = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+            return Math.min(100, average);
+        }
+
+        function getBrightness() {
+            if (!webcamFeed.videoWidth || !webcamFeed.videoHeight) return 0;
+
+            ctx.drawImage(webcamFeed, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+            const imageData = ctx.getImageData(0, 0, hiddenCanvas.width, hiddenCanvas.height);
+            const data = imageData.data;
+
+            let totalBrightness = 0;
+            let whitePixels = 0;
+            const totalPixels = data.length / 4;
+
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i];
+                const g = data[i + 1];
+                const b = data[i + 2];
+                const brightness = (r + g + b) / 3;
+
+                totalBrightness += brightness;
+                if (brightness > BRIGHTNESS_THRESHOLD) {
+                    whitePixels++;
+                }
+            }
+
+            const whiteRatio = whitePixels / totalPixels;
+
+            // Return high brightness value if enough white area is detected
+            if (whiteRatio > WHITE_AREA_THRESHOLD) {
+                return 255;
+            }
+
+            return totalBrightness / totalPixels;
+        }
+
+        function handleFeeding() {
+            const now = Date.now();
+            if (now - lastFeedTime < 500) return; // Debounce
+            lastFeedTime = now;
+
+            if (currentState !== 'eating') {
+                currentState = 'eating';
+                expressionOverlay.textContent = '😋';
+                mouthOverlay.classList.add('open');
+                babyFace.classList.add('eating');
+
+                // Show food animation
+                animateFood();
+
+                // Increase messiness
+                messinessLevel = Math.min(100, messinessLevel + 10);
+
+                const foods = ['Yum yum!', 'Nom nom!', 'Delicious!', 'More! 🍼', 'Tasty! 🥄'];
+                showFeedback(foods[Math.floor(Math.random() * foods.length)]);
+
+                // After eating, become messy
+                setTimeout(() => {
+                    if (messinessLevel > 30) {
+                        currentState = 'messy';
+                        expressionOverlay.textContent = '😬';
+                        babyFace.classList.remove('eating');
+                        babyFace.classList.add('messy');
+                    }
+                }, 1000);
+            }
+        }
+
+        function handleCleaning() {
+            if (messinessLevel > 0) {
+                messinessLevel = Math.max(0, messinessLevel - 5);
+
+                if (messinessLevel < 20) {
+                    currentState = 'clean';
+                    expressionOverlay.textContent = '😊';
+                    babyFace.classList.remove('messy', 'eating');
+                    babyFace.classList.add('clean');
+                    mouthOverlay.classList.remove('open');
+
+                    const cleanMessages = ['So clean!', 'All better!', 'Sparkly clean! ✨', 'Good as new!'];
+                    showFeedback(cleanMessages[Math.floor(Math.random() * cleanMessages.length)]);
+
+                    setTimeout(() => {
+                        if (messinessLevel === 0) {
+                            returnToNeutral();
+                        }
+                    }, 2000);
+                }
+            }
+        }
+
+        function returnToNeutral() {
+            if (messinessLevel < 20) {
+                currentState = 'neutral';
+                expressionOverlay.textContent = '😐';
+                babyFace.classList.remove('eating', 'clean', 'messy');
+                mouthOverlay.classList.remove('open');
+            }
+        }
+
+        function animateFood() {
+            const foods = ['🍼', '🥄', '🍎', '🥕', '🍌', '🥦'];
+            foodParticle.textContent = foods[Math.floor(Math.random() * foods.length)];
+
+            // Random starting position around the mouth
+            const startX = 50 + Math.random() * 20 - 10;
+            const startY = 20;
+
+            foodParticle.style.left = `${startX}%`;
+            foodParticle.style.top = `${startY}%`;
+            foodParticle.style.opacity = '1';
+            foodParticle.style.transform = 'scale(1)';
+
+            // Animate to mouth
+            setTimeout(() => {
+                foodParticle.style.left = '50%';
+                foodParticle.style.top = '55%';
+                foodParticle.style.transform = 'scale(0.5)';
+            }, 50);
+
+            // Fade out
+            setTimeout(() => {
+                foodParticle.style.opacity = '0';
+            }, 400);
+        }
+
+        function showFeedback(message) {
+            feedbackText.textContent = message;
+            feedbackText.classList.add('show');
+
+            setTimeout(() => {
+                feedbackText.classList.remove('show');
+            }, 2000);
+        }
+
+        function updateMessinessDisplay() {
+            messValue.textContent = `${messinessLevel}%`;
+            messFill.style.width = `${messinessLevel}%`;
+        }
+
+        // Event listeners
+        startBtn.addEventListener('click', startGame);
+        stopBtn.addEventListener('click', stopGame);
+
+        // Instructions on load
+        window.addEventListener('load', () => {
+            showFeedback('Click START to begin! 👶');
+        });
+    </script>
+</body>
+</html>
