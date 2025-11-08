@@ -19,6 +19,7 @@ Simply **double-click** the `index.html` file to open the game in your default w
 - Keep the `assets` folder in the same directory as `index.html`
 - The game works completely offline - no internet needed!
 - For best performance, use Chrome or Firefox
+- **Microphone permission required** for crying feature (optional)
 
 ## 🎮 Game Controls
 
@@ -30,9 +31,21 @@ Simply **double-click** the `index.html` file to open the game in your default w
 - **Arrow Keys** (⬆️⬇️⬅️➡️) - Move around
 - **A Key** - Pick up toy (when near one)
 - **B Key** - Store toys in chest (when near toy chest)
-- **Audio Button** - Toggle sound
+- **Audio Button** - Toggle background sound
+- **🎤 Microphone Button** - Enable microphone to make baby cry when you make noise!
 
 **Objective:** Collect all 8 toys in the bedroom and store them in the pink toy chest!
+
+## 🎤 NEW: Microphone Feature!
+
+Click the **🎤 Mic** button to activate your microphone. When the game detects sound (like clapping, talking, or music), the baby will start crying with:
+- Tears falling down
+- Head shaking
+- Arms up to face
+- Crying sound effects
+- Body trembling
+
+Make noise to trigger the crying! Stay quiet and the baby will calm down.
 
 ## 🏠 Rooms to Explore
 

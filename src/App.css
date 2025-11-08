@@ -248,6 +248,28 @@ body {
   box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 
+.mic-button {
+  position: absolute;
+  top: 140px;
+  right: 20px;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-family: 'Comic Sans MS', cursive;
+  background: #ff6b9d;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  z-index: 100;
+  transition: all 0.3s;
+}
+
+.mic-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
 .toast {
   position: absolute;
   top: 50%;

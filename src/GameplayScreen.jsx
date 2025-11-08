@@ -37,7 +37,7 @@ function CameraController({ babyPosition }) {
   return null
 }
 
-function GameScene({ babyConfig, toys, babyPosition, babyRotation, isWalking }) {
+function GameScene({ babyConfig, toys, babyPosition, babyRotation, isWalking, isCrying }) {
   return (
     <>
       {/* Lighting */}
@@ -67,6 +67,7 @@ function GameScene({ babyConfig, toys, babyPosition, babyRotation, isWalking }) 
         position={babyPosition}
         rotation={babyRotation}
         isWalking={isWalking}
+        isCrying={isCrying}
       />
 
       {/* Rooms */}
@@ -84,13 +85,17 @@ function GameplayScreen({ babyConfig, onBackHome }) {
   const [babyPosition, setBabyPosition] = useState([0, 0, -5])
   const [babyRotation, setBabyRotation] = useState(0)
   const [isWalking, setIsWalking] = useState(false)
+  const [isCrying, setIsCrying] = useState(false)
   const [toys, setToys] = useState(initialToys)
   const [toysInHand, setToysInHand] = useState(0)
   const [toysCollected, setToysCollected] = useState(0)
   const [currentRoom, setCurrentRoom] = useState('Bedroom')
   const [toast, setToast] = useState(null)
   const [audioEnabled, setAudioEnabled] = useState(false)
+  const [micEnabled, setMicEnabled] = useState(false)
   const audioRef = useRef(null)
+  const micRef = useRef(null)
+  const cryingSoundRef = useRef(null)
 
   const keysPressed = useRef({})
 
@@ -271,6 +276,105 @@ function GameplayScreen({ babyConfig, onBackHome }) {
     setAudioEnabled(!audioEnabled)
   }
 
+  const toggleMicrophone = async () => {
+    if (micEnabled) {
+      // Stop microphone
+      if (micRef.current) {
+        micRef.current.stream.getTracks().forEach(track => track.stop())
+        micRef.current.analyser.disconnect()
+        micRef.current = null
+      }
+      setMicEnabled(false)
+      setIsCrying(false)
+    } else {
+      // Start microphone
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+        const analyser = audioContext.createAnalyser()
+        const microphone = audioContext.createMediaStreamSource(stream)
+
+        analyser.smoothingTimeConstant = 0.8
+        analyser.fftSize = 256
+
+        microphone.connect(analyser)
+
+        micRef.current = { stream, audioContext, analyser }
+        setMicEnabled(true)
+        showToast('🎤 Microphone activated! Make noise to make baby cry!')
+      } catch (error) {
+        console.error('Microphone access denied:', error)
+        showToast('❌ Microphone access denied')
+      }
+    }
+  }
+
+  // Microphone audio detection
+  useEffect(() => {
+    if (!micEnabled || !micRef.current) return
+
+    let animationId
+    const dataArray = new Uint8Array(micRef.current.analyser.frequencyBinCount)
+
+    const detectSound = () => {
+      micRef.current.analyser.getByteFrequencyData(dataArray)
+
+      // Calculate average volume
+      const average = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length
+
+      // Threshold for crying (adjustable)
+      const cryThreshold = 30
+
+      if (average > cryThreshold) {
+        setIsCrying(true)
+
+        // Play crying sound if not already playing
+        if (!cryingSoundRef.current || cryingSoundRef.current.paused) {
+          playCryingSound()
+        }
+      } else {
+        setIsCrying(false)
+
+        // Stop crying sound
+        if (cryingSoundRef.current) {
+          cryingSoundRef.current.pause()
+          cryingSoundRef.current.currentTime = 0
+        }
+      }
+
+      animationId = requestAnimationFrame(detectSound)
+    }
+
+    detectSound()
+
+    return () => {
+      if (animationId) cancelAnimationFrame(animationId)
+    }
+  }, [micEnabled])
+
+  const playCryingSound = () => {
+    if (!cryingSoundRef.current) {
+      // Create crying sound using Web Audio API
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+
+      oscillator.type = 'sine'
+      oscillator.frequency.setValueAtTime(400, audioContext.currentTime)
+      oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.5)
+
+      gainNode.gain.setValueAtTime(0, audioContext.currentTime)
+      gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.1)
+      gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.5)
+
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + 0.5)
+    }
+  }
+
   return (
     <div className="gameplay-screen">
       {/* 3D Canvas */}
@@ -286,6 +390,7 @@ function GameplayScreen({ babyConfig, onBackHome }) {
             babyPosition={babyPosition}
             babyRotation={babyRotation}
             isWalking={isWalking}
+            isCrying={isCrying}
           />
         </Canvas>
       </div>
@@ -310,6 +415,11 @@ function GameplayScreen({ babyConfig, onBackHome }) {
       {/* Audio Toggle Button */}
       <button className="audio-button" onClick={toggleAudio}>
         {audioEnabled ? '🔊 Audio On' : '🔇 Audio Off'}
+      </button>
+
+      {/* Microphone Toggle Button */}
+      <button className="mic-button" onClick={toggleMicrophone}>
+        {micEnabled ? '🎤 Mic On' : '🎤 Mic Off'}
       </button>
 
       {/* Toast Messages */}

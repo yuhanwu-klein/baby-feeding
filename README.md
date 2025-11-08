@@ -55,6 +55,7 @@ An interactive 3D baby room exploration game built with React and Three.js. Cust
 - **A Key**: Pick up toy (when near one)
 - **B Key**: Store toys in chest (when near toy chest)
 - **Audio Button**: Toggle white noise sound
+- **Microphone Button**: Toggle microphone - baby cries when it detects sound!
 
 #### Objective
 Collect all 8 toys scattered in the bedroom and store them in the pink toy chest to win!
@@ -62,10 +63,13 @@ Collect all 8 toys scattered in the bedroom and store them in the pink toy chest
 ### 🎯 Game Features
 - **Third-person camera** that smoothly follows the baby
 - **Walking animations** with swinging arms and legs
+- **Crying animations** - baby cries with tears, head shaking, and arm movements
+- **Microphone interaction** - enable your microphone and make noise to trigger crying!
 - **Real-time toy collection** with feedback messages
 - **HUD display** showing current room, toys in hand, and toys collected
 - **Victory message** when all toys are collected
 - **Optional white noise audio** for ambiance
+- **Crying sound effects** synthesized in real-time
 - **Beautiful lighting** with warm ambient tones and shadows
 - **Seamless room transitions** - walk freely between all rooms
 
