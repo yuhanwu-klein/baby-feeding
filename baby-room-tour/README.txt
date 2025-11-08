@@ -1,4 +1,4 @@
-# 🎮 Baby Home Adventure - Standalone Version
+# 🎮 Baby Room Tour - Standalone Version
 
 ## How to Play (No Installation Required!)
 
@@ -24,7 +24,7 @@ Simply **double-click** the `index.html` file to open the game in your default w
 
 **Character Creation:**
 - Click to customize your baby's gender, skin color, and clothes color
-- Click "🚀 Start Adventure!" to begin
+- Click "🚀 Start Tour!" to begin
 
 **Gameplay:**
 - **Arrow Keys** (⬆️⬇️⬅️➡️) - Move around
@@ -42,4 +42,4 @@ Simply **double-click** the `index.html` file to open the game in your default w
 
 ## 🎉 Have Fun!
 
-Enjoy exploring the Baby Home Adventure! 🍼
+Enjoy exploring the Baby Room Tour! 🍼

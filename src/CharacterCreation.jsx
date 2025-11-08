@@ -55,7 +55,7 @@ function CharacterCreation({ onStart, initialConfig }) {
       ))}
 
       <div className="creation-card">
-        <h1>🍼 Baby Home Adventure 🏠</h1>
+        <h1>🍼 Baby Room Tour 🏠</h1>
 
         {/* Live Preview */}
         <div className="preview-window">
@@ -125,7 +125,7 @@ function CharacterCreation({ onStart, initialConfig }) {
 
         {/* Start Button */}
         <button className="start-button" onClick={handleStart}>
-          🚀 Start Adventure!
+          🚀 Start Tour!
         </button>
       </div>
     </div>

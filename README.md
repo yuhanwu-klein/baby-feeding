@@ -1,6 +1,6 @@
-# 🍼 Baby Home Adventure 🏠
+# 🍼 Baby Room Tour 🏠
 
-An interactive 3D baby home exploration game built with React and Three.js. Customize your baby character and explore three beautifully detailed rooms while collecting toys!
+An interactive 3D baby room exploration game built with React and Three.js. Customize your baby character and explore three beautifully detailed rooms while collecting toys!
 
 ## ✨ Features
 
@@ -148,6 +148,6 @@ Optional white noise background sound with lowpass filter for a calming effect. 
 
 This project is open source and available for educational purposes.
 
-## 🎉 Enjoy Your Baby Home Adventure!
+## 🎉 Enjoy Your Baby Room Tour!
 
 Have fun exploring and collecting toys! 🎈
