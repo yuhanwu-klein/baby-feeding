@@ -1,13 +1,41 @@
 # 🎮 Baby Room Tour - Standalone Version
 
-## How to Play (No Installation Required!)
+## 🚀 3种启动方法：
 
-Simply **double-click** the `index.html` file to open the game in your default web browser!
+### 方法 1: 使用启动脚本 (最简单!)
 
-### Alternative Method:
-1. Right-click on `index.html`
-2. Select "Open with"
-3. Choose your preferred browser (Chrome, Firefox, Safari, Edge, etc.)
+**Windows 用户:**
+- 双击 `START_GAME.bat` 文件
+
+**Mac/Linux 用户:**
+- 双击 `START_GAME.sh` 文件
+- 或在终端运行: `./START_GAME.sh`
+
+游戏会自动在浏览器中打开！
+
+### 方法 2: 使用 Python (推荐)
+
+打开终端/命令提示符，进入此文件夹，然后运行：
+
+```bash
+# Python 3
+python3 -m http.server 8080
+
+# 或 Python 2
+python -m SimpleHTTPServer 8080
+```
+
+然后在浏览器打开: http://localhost:8080/
+
+### 方法 3: 使用 Node.js
+
+如果安装了 Node.js，运行：
+
+```bash
+npx http-server -p 8080
+```
+
+然后在浏览器打开: http://localhost:8080/
 
 ## 📂 Files in This Folder
 
