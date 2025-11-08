@@ -1,0 +1,45 @@
+# 🎮 Baby Home Adventure - Standalone Version
+
+## How to Play (No Installation Required!)
+
+Simply **double-click** the `index.html` file to open the game in your default web browser!
+
+### Alternative Method:
+1. Right-click on `index.html`
+2. Select "Open with"
+3. Choose your preferred browser (Chrome, Firefox, Safari, Edge, etc.)
+
+## 📂 Files in This Folder
+
+- `index.html` - Main game file (open this!)
+- `assets/` - Game resources folder (keep this with index.html)
+
+## ⚠️ Important Notes
+
+- Keep the `assets` folder in the same directory as `index.html`
+- The game works completely offline - no internet needed!
+- For best performance, use Chrome or Firefox
+
+## 🎮 Game Controls
+
+**Character Creation:**
+- Click to customize your baby's gender, skin color, and clothes color
+- Click "🚀 Start Adventure!" to begin
+
+**Gameplay:**
+- **Arrow Keys** (⬆️⬇️⬅️➡️) - Move around
+- **A Key** - Pick up toy (when near one)
+- **B Key** - Store toys in chest (when near toy chest)
+- **Audio Button** - Toggle sound
+
+**Objective:** Collect all 8 toys in the bedroom and store them in the pink toy chest!
+
+## 🏠 Rooms to Explore
+
+- **Bedroom** (starting room) - Contains 8 collectible toys
+- **Living Room** - Beautiful lounge area
+- **Bathroom** - Complete with bathtub and rubber ducky
+
+## 🎉 Have Fun!
+
+Enjoy exploring the Baby Home Adventure! 🍼
