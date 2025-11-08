@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Feeding Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background-image: url('room.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ff6b9d;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .baby-container {
+            position: relative;
+            margin: 20px auto;
+            width: 300px;
+            height: 300px;
+        }
+
+        .baby-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .baby-image.eating {
+            transform: scale(1.1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            min-width: 150px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .hunger-bar {
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .hunger-fill {
+            background: linear-gradient(90deg, #ff6b6b, #ff8e53);
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .happiness-bar {
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .happiness-fill {
+            background: linear-gradient(90deg, #ffd93d, #f6c944);
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .food-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .food-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .food-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .food-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .food-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .message {
+            min-height: 50px;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.1em;
+            font-weight: bold;
+            background: #e3f2fd;
+            color: #1976d2;
+            transition: all 0.3s ease;
+        }
+
+        .message.happy {
+            background: #c8e6c9;
+            color: #2e7d32;
+        }
+
+        .message.sad {
+            background: #ffcdd2;
+            color: #c62828;
+        }
+
+        .floating-emoji {
+            position: absolute;
+            font-size: 2em;
+            animation: float-up 2s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .baby-container {
+                width: 200px;
+                height: 200px;
+            }
+
+            .food-btn {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🍼 Baby Feeding Game 🍼</h1>
+
+        <div class="baby-container" id="babyContainer">
+            <img src="baby.jpg" alt="Baby" class="baby-image" id="babyImage">
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Meals Fed</div>
+                <div class="stat-value" id="mealsCount">0</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Score</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+        </div>
+
+        <div>
+            <div style="font-weight: bold; margin-bottom: 5px;">Hunger Level</div>
+            <div class="hunger-bar">
+                <div class="hunger-fill" id="hungerFill">50%</div>
+            </div>
+        </div>
+
+        <div>
+            <div style="font-weight: bold; margin-bottom: 5px;">Happiness Level</div>
+            <div class="happiness-bar">
+                <div class="happiness-fill" id="happinessFill">50%</div>
+            </div>
+        </div>
+
+        <div class="message" id="message">
+            Welcome! Feed the baby to keep them happy! 👶
+        </div>
+
+        <div class="food-buttons">
+            <button class="food-btn" onclick="feedBaby('milk')">🍼 Milk</button>
+            <button class="food-btn" onclick="feedBaby('fruit')">🍎 Fruit</button>
+            <button class="food-btn" onclick="feedBaby('veggies')">🥦 Veggies</button>
+            <button class="food-btn" onclick="feedBaby('snack')">🍪 Snack</button>
+        </div>
+
+        <button class="reset-btn" onclick="resetGame()">🔄 Reset Game</button>
+    </div>
+
+    <script>
+        let hunger = 50;
+        let happiness = 50;
+        let meals = 0;
+        let score = 0;
+        let gameInterval;
+
+        const messages = {
+            milk: ["Yummy milk! 😋", "Baby loves milk! 🍼", "So refreshing! 💙"],
+            fruit: ["Fruity goodness! 🍎", "Healthy and tasty! 🍊", "Baby loves fruit! 🍇"],
+            veggies: ["Good for you! 🥦", "Growing strong! 💪", "Nutritious veggies! 🥕"],
+            snack: ["Treat time! 🍪", "Sweet snack! 😊", "Tasty treat! 🍰"]
+        };
+
+        const sadMessages = [
+            "Baby is getting hungry! 😟",
+            "Feed me please! 🥺",
+            "I'm so hungry! 😢",
+            "Getting cranky! 😠"
+        ];
+
+        const happyMessages = [
+            "Baby is so happy! 😊",
+            "Everything is great! 🌟",
+            "Feeling wonderful! 💖",
+            "So content! ✨"
+        ];
+
+        function init() {
+            updateDisplay();
+            gameInterval = setInterval(() => {
+                hunger = Math.min(100, hunger + 2);
+                happiness = Math.max(0, happiness - 1);
+                updateDisplay();
+                checkGameState();
+            }, 3000);
+        }
+
+        function feedBaby(foodType) {
+            const hungerReduction = foodType === 'milk' ? 25 : 20;
+            const happinessIncrease = foodType === 'fruit' || foodType === 'veggies' ? 20 : 15;
+
+            hunger = Math.max(0, hunger - hungerReduction);
+            happiness = Math.min(100, happiness + happinessIncrease);
+            meals++;
+            score += 10 + Math.floor(happiness / 10);
+
+            showMessage(messages[foodType][Math.floor(Math.random() * messages[foodType].length)], 'happy');
+
+            animateBaby();
+            showFloatingEmoji(foodType);
+
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            document.getElementById('hungerFill').style.width = hunger + '%';
+            document.getElementById('hungerFill').textContent = hunger + '%';
+
+            document.getElementById('happinessFill').style.width = happiness + '%';
+            document.getElementById('happinessFill').textContent = happiness + '%';
+
+            document.getElementById('mealsCount').textContent = meals;
+            document.getElementById('score').textContent = score;
+        }
+
+        function checkGameState() {
+            if (hunger > 80) {
+                showMessage(sadMessages[Math.floor(Math.random() * sadMessages.length)], 'sad');
+            } else if (happiness > 70 && hunger < 30) {
+                showMessage(happyMessages[Math.floor(Math.random() * happyMessages.length)], 'happy');
+            }
+        }
+
+        function showMessage(text, type = '') {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = 'message ' + type;
+        }
+
+        function animateBaby() {
+            const baby = document.getElementById('babyImage');
+            baby.classList.add('eating');
+            setTimeout(() => {
+                baby.classList.remove('eating');
+            }, 500);
+        }
+
+        function showFloatingEmoji(foodType) {
+            const emojis = {
+                milk: '🍼',
+                fruit: '🍎',
+                veggies: '🥦',
+                snack: '🍪'
+            };
+
+            const emoji = document.createElement('div');
+            emoji.className = 'floating-emoji';
+            emoji.textContent = emojis[foodType];
+            emoji.style.left = Math.random() * 200 + 50 + 'px';
+            emoji.style.top = '150px';
+
+            document.getElementById('babyContainer').appendChild(emoji);
+
+            setTimeout(() => {
+                emoji.remove();
+            }, 2000);
+        }
+
+        function resetGame() {
+            hunger = 50;
+            happiness = 50;
+            meals = 0;
+            score = 0;
+            updateDisplay();
+            showMessage("Game reset! Let's start fresh! 🎮", '');
+        }
+
+        // Initialize game when page loads
+        window.onload = init;
+
+        // Cleanup interval when page unloads
+        window.onbeforeunload = () => {
+            if (gameInterval) clearInterval(gameInterval);
+        };
+    </script>
+</body>
+</html>
