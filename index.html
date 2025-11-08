@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozy Baby Room - 3D Interactive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #FFF9E6 0%, #FFE4B5 100%);
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        #info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 249, 230, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 300px;
+            z-index: 100;
+        }
+
+        #info-panel h1 {
+            font-size: 24px;
+            color: #D2691E;
+            margin-bottom: 10px;
+        }
+
+        #info-panel p {
+            font-size: 14px;
+            color: #8B4513;
+            line-height: 1.6;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 249, 230, 0.9);
+            padding: 15px 30px;
+            border-radius: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+
+        .controls button {
+            background: #FFD700;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #8B4513;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .controls button:hover {
+            background: #FFA500;
+            transform: scale(1.05);
+        }
+
+        .controls button:active {
+            transform: scale(0.95);
+        }
+
+        #audio-toggle {
+            background: #90EE90;
+        }
+
+        #audio-toggle.active {
+            background: #32CD32;
+        }
+
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #D2691E;
+            z-index: 200;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <div id="info-panel">
+        <h1>🌟 Cozy Baby Room</h1>
+        <p>Welcome to this warm and playful nursery! Use your mouse to explore:</p>
+        <ul style="margin-top: 10px; color: #8B4513;">
+            <li>🖱️ Drag to rotate view</li>
+            <li>🔍 Scroll to zoom</li>
+            <li>▶️ Click buttons below to control</li>
+        </ul>
+    </div>
+
+    <div class="controls">
+        <button id="audio-toggle">🔊 White Noise</button>
+        <button id="reset-camera">📷 Reset View</button>
+        <button id="toggle-lights">💡 Toggle Lights</button>
+    </div>
+
+    <div id="loading">Loading your cozy room... ✨</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="room.js"></script>
+</body>
+</html>
