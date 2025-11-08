@@ -61,6 +61,17 @@
             transform: scale(1.1);
         }
 
+        .baby-image.crying {
+            animation: shake 0.5s infinite;
+            filter: brightness(0.8);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px) rotate(-5deg); }
+            75% { transform: translateX(10px) rotate(5deg); }
+        }
+
         .stats {
             display: flex;
             justify-content: space-around;
@@ -220,6 +231,55 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
+        .mic-btn {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            font-size: 1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .mic-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .mic-btn.active {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 87, 108, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(245, 87, 108, 0); }
+        }
+
+        .sound-level {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .sound-bar {
+            background: #e0e0e0;
+            height: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .sound-fill {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            height: 100%;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 1.8em;
@@ -282,6 +342,14 @@
         </div>
 
         <button class="reset-btn" onclick="resetGame()">🔄 Reset Game</button>
+        <button class="mic-btn" id="micBtn" onclick="toggleMicrophone()">🎤 Enable Microphone</button>
+
+        <div class="sound-level" id="soundLevel" style="display: none;">
+            <div>Sound Level:</div>
+            <div class="sound-bar">
+                <div class="sound-fill" id="soundFill"></div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -290,6 +358,15 @@
         let meals = 0;
         let score = 0;
         let gameInterval;
+
+        // Microphone variables
+        let audioContext;
+        let analyser;
+        let microphone;
+        let dataArray;
+        let micActive = false;
+        let isCrying = false;
+        let soundCheckInterval;
 
         const messages = {
             milk: ["Yummy milk! 😋", "Baby loves milk! 🍼", "So refreshing! 💙"],
@@ -310,6 +387,14 @@
             "Everything is great! 🌟",
             "Feeling wonderful! 💖",
             "So content! ✨"
+        ];
+
+        const cryingMessages = [
+            "WAAAH! Too noisy! 😭",
+            "Baby is crying from the noise! 😢",
+            "Shh! The noise scared me! 😨",
+            "It's too loud! 😭😭",
+            "Why is it so noisy?! 😢"
         ];
 
         function init() {
@@ -372,26 +457,6 @@
             }, 500);
         }
 
-        function showFloatingEmoji(foodType) {
-            const emojis = {
-                milk: '🍼',
-                fruit: '🍎',
-                veggies: '🥦',
-                snack: '🍪'
-            };
-
-            const emoji = document.createElement('div');
-            emoji.className = 'floating-emoji';
-            emoji.textContent = emojis[foodType];
-            emoji.style.left = Math.random() * 200 + 50 + 'px';
-            emoji.style.top = '150px';
-
-            document.getElementById('babyContainer').appendChild(emoji);
-
-            setTimeout(() => {
-                emoji.remove();
-            }, 2000);
-        }
 
         function resetGame() {
             hunger = 50;
@@ -402,12 +467,138 @@
             showMessage("Game reset! Let's start fresh! 🎮", '');
         }
 
+        async function toggleMicrophone() {
+            const micBtn = document.getElementById('micBtn');
+            const soundLevel = document.getElementById('soundLevel');
+
+            if (!micActive) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    microphone = audioContext.createMediaStreamSource(stream);
+
+                    analyser.fftSize = 256;
+                    const bufferLength = analyser.frequencyBinCount;
+                    dataArray = new Uint8Array(bufferLength);
+
+                    microphone.connect(analyser);
+
+                    micActive = true;
+                    micBtn.textContent = '🎤 Disable Microphone';
+                    micBtn.classList.add('active');
+                    soundLevel.style.display = 'block';
+
+                    showMessage("Microphone enabled! Be quiet or baby will cry! 🤫", '');
+
+                    startSoundDetection();
+                } catch (error) {
+                    showMessage("Could not access microphone! " + error.message, 'sad');
+                }
+            } else {
+                stopMicrophone();
+                micBtn.textContent = '🎤 Enable Microphone';
+                micBtn.classList.remove('active');
+                soundLevel.style.display = 'none';
+                showMessage("Microphone disabled", '');
+            }
+        }
+
+        function stopMicrophone() {
+            if (soundCheckInterval) {
+                clearInterval(soundCheckInterval);
+            }
+            if (microphone && microphone.mediaStream) {
+                microphone.mediaStream.getTracks().forEach(track => track.stop());
+            }
+            if (audioContext) {
+                audioContext.close();
+            }
+            micActive = false;
+            stopCrying();
+        }
+
+        function startSoundDetection() {
+            soundCheckInterval = setInterval(() => {
+                if (!analyser) return;
+
+                analyser.getByteFrequencyData(dataArray);
+
+                // Calculate average volume
+                let sum = 0;
+                for (let i = 0; i < dataArray.length; i++) {
+                    sum += dataArray[i];
+                }
+                const average = sum / dataArray.length;
+
+                // Update sound level display
+                const soundFill = document.getElementById('soundFill');
+                const percentage = Math.min(100, (average / 128) * 100);
+                soundFill.style.width = percentage + '%';
+
+                // Threshold for crying (adjust this value to make it more/less sensitive)
+                const noiseThreshold = 30;
+
+                if (average > noiseThreshold && !isCrying) {
+                    makeBabyCry();
+                } else if (average <= noiseThreshold && isCrying) {
+                    stopCrying();
+                }
+            }, 100);
+        }
+
+        function makeBabyCry() {
+            if (isCrying) return;
+
+            isCrying = true;
+            const baby = document.getElementById('babyImage');
+            baby.classList.add('crying');
+
+            showMessage(cryingMessages[Math.floor(Math.random() * cryingMessages.length)], 'sad');
+            showFloatingEmoji('cry');
+
+            // Decrease happiness while crying
+            happiness = Math.max(0, happiness - 15);
+            updateDisplay();
+        }
+
+        function stopCrying() {
+            if (!isCrying) return;
+
+            isCrying = false;
+            const baby = document.getElementById('babyImage');
+            baby.classList.remove('crying');
+        }
+
+        function showFloatingEmoji(foodType) {
+            const emojis = {
+                milk: '🍼',
+                fruit: '🍎',
+                veggies: '🥦',
+                snack: '🍪',
+                cry: '😭'
+            };
+
+            const emoji = document.createElement('div');
+            emoji.className = 'floating-emoji';
+            emoji.textContent = emojis[foodType] || emojis.cry;
+            emoji.style.left = Math.random() * 200 + 50 + 'px';
+            emoji.style.top = '150px';
+
+            document.getElementById('babyContainer').appendChild(emoji);
+
+            setTimeout(() => {
+                emoji.remove();
+            }, 2000);
+        }
+
         // Initialize game when page loads
         window.onload = init;
 
         // Cleanup interval when page unloads
         window.onbeforeunload = () => {
             if (gameInterval) clearInterval(gameInterval);
+            if (micActive) stopMicrophone();
         };
     </script>
 </body>
