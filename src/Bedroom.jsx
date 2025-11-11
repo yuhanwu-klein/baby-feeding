@@ -59,7 +59,7 @@ function Bedroom({ toys, onToyCollect }) {
       </group>
 
       {/* Nightstand with Lamp */}
-      <group position={[-1, 0, -8]}>
+      <group position={[-1.5, 0, -8.5]}>
         {/* Nightstand */}
         <mesh position={[0, 0.5, 0]} castShadow>
           <boxGeometry args={[0.8, 1, 0.8]} />
@@ -79,7 +79,7 @@ function Bedroom({ toys, onToyCollect }) {
       </group>
 
       {/* Dresser */}
-      <group position={[5, 0, -8]}>
+      <group position={[5.5, 0, -8.5]}>
         {/* Main Body */}
         <mesh position={[0, 1, 0]} castShadow>
           <boxGeometry args={[2.5, 2, 1]} />
@@ -131,7 +131,7 @@ function Bedroom({ toys, onToyCollect }) {
       </group>
 
       {/* Rocking Chair */}
-      <group position={[7, 0, -7]}>
+      <group position={[7.5, 0, -6.5]}>
         {/* Seat */}
         <mesh position={[0, 0.5, 0]} castShadow>
           <boxGeometry args={[0.8, 0.1, 0.8]} />
@@ -190,23 +190,27 @@ function Bedroom({ toys, onToyCollect }) {
         </group>
       </group>
 
-      {/* Picture Frames on Wall */}
-      <mesh position={[-4, 4, -9.9]} castShadow>
+      {/* Picture Frames on Wall - Symmetrical */}
+      <mesh position={[-5, 4.5, -9.9]} castShadow>
         <boxGeometry args={[1, 1.2, 0.05]} />
         <meshStandardMaterial color="#4a3728" />
       </mesh>
-      <mesh position={[4, 4, -9.9]} castShadow>
+      <mesh position={[5, 4.5, -9.9]} castShadow>
         <boxGeometry args={[1, 1.2, 0.05]} />
         <meshStandardMaterial color="#4a3728" />
       </mesh>
-      <mesh position={[-7, 3, -9.9]} castShadow>
+      <mesh position={[-7.5, 3.5, -9.9]} castShadow>
+        <boxGeometry args={[0.8, 0.8, 0.05]} />
+        <meshStandardMaterial color="#4a3728" />
+      </mesh>
+      <mesh position={[7.5, 3.5, -9.9]} castShadow>
         <boxGeometry args={[0.8, 0.8, 0.05]} />
         <meshStandardMaterial color="#4a3728" />
       </mesh>
 
-      {/* Large Pink Rug */}
-      <mesh position={[0, 0.05, -2]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[6, 5]} />
+      {/* Large Pink Rug - Centered */}
+      <mesh position={[0, 0.05, -3]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[7, 6]} />
         <meshStandardMaterial color="#ffb6c1" />
       </mesh>
 

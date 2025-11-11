@@ -6,8 +6,9 @@ function App() {
   const [gameStarted, setGameStarted] = useState(false)
   const [babyConfig, setBabyConfig] = useState({
     gender: 'boy',
-    skinColor: '#ffd7b5',
-    clothesColor: '#b3e5fc'
+    skinColor: '#ffe0d0',
+    clothesColor: '#87ceeb',
+    hairStyle: 'short'
   })
 
   const handleStartGame = (config) => {

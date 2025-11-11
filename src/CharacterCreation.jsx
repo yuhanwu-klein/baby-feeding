@@ -4,20 +4,29 @@ import { OrbitControls } from '@react-three/drei'
 import BabyModel from './BabyModel'
 
 const skinColors = [
-  { name: 'Light', color: '#ffd7b5' },
-  { name: 'Medium', color: '#e8b896' },
-  { name: 'Tan', color: '#d4a574' },
-  { name: 'Brown', color: '#a67c52' },
-  { name: 'Dark', color: '#8b6f47' }
+  { name: 'Porcelain', color: '#ffe0d0' },
+  { name: 'Peach', color: '#ffcdb2' },
+  { name: 'Honey', color: '#e0a881' },
+  { name: 'Caramel', color: '#c68a61' },
+  { name: 'Cocoa', color: '#9d6b4e' },
+  { name: 'Chocolate', color: '#6b4a3a' }
 ]
 
 const clothesColors = [
-  { name: 'Blue', color: '#b3e5fc' },
-  { name: 'Pink', color: '#ffb6c1' },
-  { name: 'Yellow', color: '#ffe66d' },
-  { name: 'Green', color: '#95e1d3' },
-  { name: 'Purple', color: '#d4a5d4' },
-  { name: 'Orange', color: '#ffb88c' }
+  { name: 'Sky Blue', color: '#87ceeb' },
+  { name: 'Rose Pink', color: '#ffb6c1' },
+  { name: 'Sunshine', color: '#ffe66d' },
+  { name: 'Mint', color: '#98d8c8' },
+  { name: 'Lavender', color: '#c8a2d0' },
+  { name: 'Coral', color: '#ff9f85' }
+]
+
+const hairStyles = [
+  { name: 'Short', value: 'short' },
+  { name: 'Pigtails', value: 'pigtails' },
+  { name: 'Ponytail', value: 'ponytail' },
+  { name: 'Curly', value: 'curly' },
+  { name: 'Bald', value: 'bald' }
 ]
 
 const floatingEmojis = [
@@ -33,9 +42,10 @@ function CharacterCreation({ onStart, initialConfig }) {
   const [gender, setGender] = useState(initialConfig.gender)
   const [skinColor, setSkinColor] = useState(initialConfig.skinColor)
   const [clothesColor, setClothesColor] = useState(initialConfig.clothesColor)
+  const [hairStyle, setHairStyle] = useState(initialConfig.hairStyle || 'short')
 
   const handleStart = () => {
-    onStart({ gender, skinColor, clothesColor })
+    onStart({ gender, skinColor, clothesColor, hairStyle })
   }
 
   return (
@@ -67,6 +77,7 @@ function CharacterCreation({ onStart, initialConfig }) {
               gender={gender}
               skinColor={skinColor}
               clothesColor={clothesColor}
+              hairStyle={hairStyle}
               preview={true}
             />
           </Canvas>
@@ -119,6 +130,23 @@ function CharacterCreation({ onStart, initialConfig }) {
                 onClick={() => setClothesColor(option.color)}
                 title={option.name}
               />
+            ))}
+          </div>
+        </div>
+
+        {/* Hair Style Selection */}
+        <div className="customization-section">
+          <h3>💇 Hair Style</h3>
+          <div className="gender-buttons">
+            {hairStyles.map((style) => (
+              <button
+                key={style.value}
+                className={`gender-button ${hairStyle === style.value ? 'selected' : ''}`}
+                onClick={() => setHairStyle(style.value)}
+                style={{ padding: '10px 20px', fontSize: '1rem' }}
+              >
+                {style.name}
+              </button>
             ))}
           </div>
         </div>

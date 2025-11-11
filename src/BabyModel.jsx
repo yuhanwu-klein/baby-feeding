@@ -4,8 +4,9 @@ import * as THREE from 'three'
 
 function BabyModel({
   gender = 'boy',
-  skinColor = '#ffd7b5',
-  clothesColor = '#b3e5fc',
+  skinColor = '#ffe0d0',
+  clothesColor = '#87ceeb',
+  hairStyle = 'short',
   position = [0, 0, 0],
   rotation = 0,
   isWalking = false,
@@ -164,12 +165,14 @@ function BabyModel({
       </group>
 
       {/* Hair */}
-      {gender === 'boy' ? (
+      {hairStyle === 'short' && (
         // Short hair covering top
         <mesh position={[0, 2.6, 0]} castShadow material={materials.hair}>
           <sphereGeometry args={[0.5, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2]} />
         </mesh>
-      ) : (
+      )}
+
+      {hairStyle === 'pigtails' && (
         // Pigtails with bows
         <>
           {/* Left pigtail */}
@@ -199,6 +202,43 @@ function BabyModel({
           </group>
         </>
       )}
+
+      {hairStyle === 'ponytail' && (
+        // Ponytail at back
+        <>
+          <mesh position={[0, 2.6, 0]} castShadow material={materials.hair}>
+            <sphereGeometry args={[0.5, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2]} />
+          </mesh>
+          <group position={[0, 2.4, -0.6]}>
+            <mesh castShadow material={materials.hair}>
+              <sphereGeometry args={[0.25, 16, 16]} />
+            </mesh>
+            <mesh position={[0, -0.3, 0]} castShadow material={materials.hair}>
+              <cylinderGeometry args={[0.15, 0.1, 0.5, 16]} />
+            </mesh>
+          </group>
+        </>
+      )}
+
+      {hairStyle === 'curly' && (
+        // Curly/Afro hair
+        <>
+          <mesh position={[0, 2.6, 0]} castShadow material={materials.hair}>
+            <sphereGeometry args={[0.55, 32, 32]} />
+          </mesh>
+          <mesh position={[-0.3, 2.7, 0]} castShadow material={materials.hair}>
+            <sphereGeometry args={[0.2, 16, 16]} />
+          </mesh>
+          <mesh position={[0.3, 2.7, 0]} castShadow material={materials.hair}>
+            <sphereGeometry args={[0.2, 16, 16]} />
+          </mesh>
+          <mesh position={[0, 2.7, 0.3]} castShadow material={materials.hair}>
+            <sphereGeometry args={[0.2, 16, 16]} />
+          </mesh>
+        </>
+      )}
+
+      {/* Bald - no hair */}
 
       {/* Eyes */}
       <mesh ref={leftEyeRef} position={[-0.2, 2.4, 0.5]} castShadow material={materials.eye}>

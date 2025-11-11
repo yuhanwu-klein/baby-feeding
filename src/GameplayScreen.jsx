@@ -77,6 +77,7 @@ function GameScene({ babyConfig, toys, babyPosition, babyRotation, isWalking, is
         gender={babyConfig.gender}
         skinColor={babyConfig.skinColor}
         clothesColor={babyConfig.clothesColor}
+        hairStyle={babyConfig.hairStyle}
         position={babyPosition}
         rotation={babyRotation}
         isWalking={isWalking}
