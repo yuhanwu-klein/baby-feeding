@@ -41,10 +41,10 @@ function GameScene({ babyConfig, toys, babyPosition, babyRotation, isWalking, is
   return (
     <>
       {/* Lighting */}
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={0.8} />
       <directionalLight
         position={[10, 15, 5]}
-        intensity={0.8}
+        intensity={1.2}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
@@ -54,10 +54,23 @@ function GameScene({ babyConfig, toys, babyPosition, babyRotation, isWalking, is
         shadow-camera-bottom={-20}
       />
 
-      {/* Point Lights for warmth */}
-      <pointLight position={[-5, 4, -5]} intensity={0.4} color="#ffe6cc" distance={15} />
-      <pointLight position={[5, 4, 5]} intensity={0.4} color="#ffe6cc" distance={15} />
-      <pointLight position={[0, 4, 15]} intensity={0.4} color="#ffe6cc" distance={15} />
+      {/* Point Lights for warmth and brightness */}
+      {/* Bedroom lights */}
+      <pointLight position={[-5, 5, -5]} intensity={0.8} color="#fff5e6" distance={20} />
+      <pointLight position={[5, 5, -5]} intensity={0.8} color="#fff5e6" distance={20} />
+
+      {/* Living Room lights */}
+      <pointLight position={[-5, 5, 10]} intensity={0.8} color="#fff5e6" distance={20} />
+      <pointLight position={[5, 5, 10]} intensity={0.8} color="#fff5e6" distance={20} />
+
+      {/* Bathroom lights */}
+      <pointLight position={[-5, 5, 20]} intensity={0.8} color="#fff5e6" distance={20} />
+      <pointLight position={[5, 5, 20]} intensity={0.8} color="#fff5e6" distance={20} />
+
+      {/* Ceiling lights for overall brightness */}
+      <pointLight position={[0, 8, -5]} intensity={1.0} color="#ffffff" distance={25} />
+      <pointLight position={[0, 8, 10]} intensity={1.0} color="#ffffff" distance={25} />
+      <pointLight position={[0, 8, 20]} intensity={1.0} color="#ffffff" distance={25} />
 
       {/* Baby Character */}
       <BabyModel
