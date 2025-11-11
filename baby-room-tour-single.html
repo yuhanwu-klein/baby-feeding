@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baby Room Tour</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      overflow: hidden;
+    }
+
+    #root {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* Character Creation Screen Styles */
+    .character-creation {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #ffd93d 0%, #ff6b6b 50%, #f9ca24 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .floating-emoji {
+      position: absolute;
+      font-size: 3rem;
+      animation: float 6s ease-in-out infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+      }
+      50% {
+        transform: translateY(-30px) rotate(10deg);
+      }
+    }
+
+    .creation-card {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 800px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .creation-card h1 {
+      color: #ff6b6b;
+      font-size: 3rem;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .customization-section {
+      margin: 30px 0;
+    }
+
+    .customization-section h3 {
+      color: #333;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    .preview-window {
+      width: 300px;
+      height: 300px;
+      margin: 0 auto 30px;
+      border: 4px solid #ff6b6b;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    .gender-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .gender-button {
+      padding: 15px 40px;
+      font-size: 1.3rem;
+      font-family: 'Comic Sans MS', cursive;
+      border: 3px solid #ddd;
+      border-radius: 15px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .gender-button.selected {
+      background: #ff6b6b;
+      color: white;
+      border-color: #ff6b6b;
+      transform: scale(1.1);
+    }
+
+    .gender-button:hover {
+      transform: scale(1.05);
+    }
+
+    .color-options {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .color-swatch {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 3px solid #ddd;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .color-swatch.selected {
+      border-width: 5px;
+      border-color: #333;
+      transform: scale(1.2);
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.1);
+    }
+
+    .start-button {
+      padding: 20px 60px;
+      font-size: 1.8rem;
+      font-family: 'Comic Sans MS', cursive;
+      background: linear-gradient(135deg, #ff6b6b, #f9ca24);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(255,107,107,0.5);
+      transition: all 0.3s;
+      margin-top: 20px;
+    }
+
+    .start-button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(255,107,107,0.7);
+    }
+
+    /* Gameplay Screen Styles */
+    .gameplay-screen {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .game-canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .hud {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255,255,255,0.9);
+      padding: 20px;
+      border-radius: 15px;
+      font-size: 1.2rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 100;
+    }
+
+    .hud-room {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ff6b6b;
+      margin-bottom: 10px;
+    }
+
+    .hud-counter {
+      margin: 5px 0;
+      color: #333;
+    }
+
+    .instructions {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.95);
+      padding: 15px 30px;
+      border-radius: 20px;
+      font-size: 1.1rem;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 100;
+      text-align: center;
+      color: #333;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-family: 'Comic Sans MS', cursive;
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    .back-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .audio-button {
+      position: absolute;
+      top: 80px;
+      right: 20px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-family: 'Comic Sans MS', cursive;
+      background: #4ecdc4;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    .audio-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .mic-button {
+      position: absolute;
+      top: 140px;
+      right: 20px;
+      padding: 15px 30px;
+      font-size: 1.2rem;
+      font-family: 'Comic Sans MS', cursive;
+      background: #ff6b9d;
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 100;
+      transition: all 0.3s;
+    }
+
+    .mic-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .toast {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(76, 175, 80, 0.95);
+      color: white;
+      padding: 20px 40px;
+      border-radius: 15px;
+      font-size: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 200;
+      animation: fadeInOut 2s ease-in-out;
+    }
+
+    .toast.victory {
+      background: rgba(255, 215, 0, 0.95);
+      color: #333;
+      font-size: 2rem;
+      padding: 30px 60px;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translate(-50%, -60%); }
+      10% { opacity: 1; transform: translate(-50%, -50%); }
+      90% { opacity: 1; transform: translate(-50%, -50%); }
+      100% { opacity: 0; transform: translate(-50%, -40%); }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Load React and Three.js from CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/@react-three/fiber@8.15.0/dist/index.umd.js"></script>
+  <script src="https://unpkg.com/@react-three/drei@9.96.0/dist/index.umd.js"></script>
+
+  <script type="text/babel" data-type="module">
+    const { useState, useEffect, useRef, useMemo } = React;
+    const { Canvas, useFrame, useThree } = window.ReactThreeFiber;
+    const THREE = window.THREE;
+
+    // Baby Model Component (simplified inline version)
+    function BabyModel({ gender = 'boy', skinColor = '#ffd7b5', clothesColor = '#b3e5fc', position = [0, 0, 0], rotation = 0, isWalking = false, isCrying = false, preview = false }) {
+      const groupRef = useRef();
+      const headRef = useRef();
+      const leftEyeRef = useRef();
+      const rightEyeRef = useRef();
+      const leftTearRef = useRef();
+      const rightTearRef = useRef();
+      const mouthRef = useRef();
+      const leftArmRef = useRef();
+      const rightArmRef = useRef();
+      const leftLegRef = useRef();
+      const rightLegRef = useRef();
+
+      const walkTime = useRef(0);
+      const cryTime = useRef(0);
+
+      useFrame((state, delta) => {
+        if (preview && groupRef.current) {
+          groupRef.current.rotation.y += delta * 0.5;
+          groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 2) * 0.1;
+        }
+
+        // Crying animation
+        if (isCrying && !preview) {
+          cryTime.current += delta * 10;
+          if (headRef.current) headRef.current.rotation.z = Math.sin(cryTime.current) * 0.1;
+          if (mouthRef.current) mouthRef.current.rotation.x = Math.PI + Math.sin(cryTime.current * 2) * 0.2;
+          if (leftEyeRef.current && rightEyeRef.current) {
+            const squintScale = 1 + Math.sin(cryTime.current * 2) * 0.3;
+            leftEyeRef.current.scale.y = squintScale;
+            rightEyeRef.current.scale.y = squintScale;
+          }
+          if (leftTearRef.current && rightTearRef.current) {
+            leftTearRef.current.position.y = 0.5 - (cryTime.current % 2) * 0.5;
+            rightTearRef.current.position.y = 0.5 - ((cryTime.current + 1) % 2) * 0.5;
+            leftTearRef.current.visible = true;
+            rightTearRef.current.visible = true;
+          }
+          if (leftArmRef.current && rightArmRef.current) {
+            leftArmRef.current.rotation.x = -Math.PI / 3;
+            leftArmRef.current.rotation.z = -Math.PI / 6;
+            rightArmRef.current.rotation.x = -Math.PI / 3;
+            rightArmRef.current.rotation.z = Math.PI / 6;
+          }
+          if (groupRef.current) {
+            groupRef.current.position.x = position[0] + Math.sin(cryTime.current * 3) * 0.03;
+            groupRef.current.position.y = position[1] + Math.abs(Math.sin(cryTime.current * 2)) * 0.05;
+          }
+        } else {
+          if (headRef.current) headRef.current.rotation.z = 0;
+          if (mouthRef.current) mouthRef.current.rotation.x = Math.PI;
+          if (leftEyeRef.current) leftEyeRef.current.scale.y = 1;
+          if (rightEyeRef.current) rightEyeRef.current.scale.y = 1;
+          if (leftTearRef.current) leftTearRef.current.visible = false;
+          if (rightTearRef.current) rightTearRef.current.visible = false;
+        }
+
+        // Walking animation
+        if (isWalking && !preview && !isCrying) {
+          walkTime.current += delta * 8;
+          if (leftLegRef.current && rightLegRef.current) {
+            leftLegRef.current.rotation.x = Math.sin(walkTime.current) * 0.3;
+            rightLegRef.current.rotation.x = -Math.sin(walkTime.current) * 0.3;
+          }
+          if (leftArmRef.current && rightArmRef.current) {
+            leftArmRef.current.rotation.x = -Math.sin(walkTime.current) * 0.2;
+            rightArmRef.current.rotation.x = Math.sin(walkTime.current) * 0.2;
+          }
+          if (groupRef.current) {
+            groupRef.current.position.y = position[1] + Math.abs(Math.sin(walkTime.current)) * 0.05;
+          }
+        } else if (groupRef.current && !preview && !isCrying) {
+          groupRef.current.position.y = position[1];
+          groupRef.current.position.x = position[0];
+          if (leftLegRef.current) leftLegRef.current.rotation.x = 0;
+          if (rightLegRef.current) rightLegRef.current.rotation.x = 0;
+          if (leftArmRef.current) {
+            leftArmRef.current.rotation.x = 0;
+            leftArmRef.current.rotation.z = 0;
+          }
+          if (rightArmRef.current) {
+            rightArmRef.current.rotation.x = 0;
+            rightArmRef.current.rotation.z = 0;
+          }
+        }
+
+        if (groupRef.current && !preview) {
+          groupRef.current.rotation.y = rotation;
+        }
+      });
+
+      return React.createElement('group', { ref: groupRef, position: preview ? [0, 0, 0] : position },
+        // Head group
+        React.createElement('group', { ref: headRef, position: [0, 2.3, 0] },
+          React.createElement('mesh', { castShadow: true },
+            React.createElement('sphereGeometry', { args: [0.6, 32, 32] }),
+            React.createElement('meshStandardMaterial', { color: skinColor, roughness: 0.8 })
+          )
+        ),
+        // Hair
+        gender === 'boy' ?
+          React.createElement('mesh', { position: [0, 2.6, 0], castShadow: true },
+            React.createElement('sphereGeometry', { args: [0.5, 32, 32, 0, Math.PI * 2, 0, Math.PI / 2] }),
+            React.createElement('meshStandardMaterial', { color: '#4a3728', roughness: 0.9 })
+          ) :
+          React.createElement(React.Fragment, null,
+            React.createElement('group', { position: [-0.5, 2.5, 0] },
+              React.createElement('mesh', { castShadow: true },
+                React.createElement('sphereGeometry', { args: [0.2, 16, 16] }),
+                React.createElement('meshStandardMaterial', { color: '#4a3728' })
+              ),
+              React.createElement('mesh', { position: [0, 0.15, 0], castShadow: true },
+                React.createElement('boxGeometry', { args: [0.15, 0.1, 0.3] }),
+                React.createElement('meshStandardMaterial', { color: '#ffb6c1' })
+              )
+            ),
+            React.createElement('group', { position: [0.5, 2.5, 0] },
+              React.createElement('mesh', { castShadow: true },
+                React.createElement('sphereGeometry', { args: [0.2, 16, 16] }),
+                React.createElement('meshStandardMaterial', { color: '#4a3728' })
+              ),
+              React.createElement('mesh', { position: [0, 0.15, 0], castShadow: true },
+                React.createElement('boxGeometry', { args: [0.15, 0.1, 0.3] }),
+                React.createElement('meshStandardMaterial', { color: '#ffb6c1' })
+              )
+            )
+          ),
+        // Eyes
+        React.createElement('mesh', { ref: leftEyeRef, position: [-0.2, 2.4, 0.5], castShadow: true },
+          React.createElement('sphereGeometry', { args: [0.08, 16, 16] }),
+          React.createElement('meshStandardMaterial', { color: '#000000' })
+        ),
+        React.createElement('mesh', { ref: rightEyeRef, position: [0.2, 2.4, 0.5], castShadow: true },
+          React.createElement('sphereGeometry', { args: [0.08, 16, 16] }),
+          React.createElement('meshStandardMaterial', { color: '#000000' })
+        ),
+        // Tears
+        React.createElement('mesh', { ref: leftTearRef, position: [-0.2, 2.2, 0.55], visible: false },
+          React.createElement('sphereGeometry', { args: [0.05, 16, 16] }),
+          React.createElement('meshStandardMaterial', { color: '#87ceeb', transparent: true, opacity: 0.7 })
+        ),
+        React.createElement('mesh', { ref: rightTearRef, position: [0.2, 2.2, 0.55], visible: false },
+          React.createElement('sphereGeometry', { args: [0.05, 16, 16] }),
+          React.createElement('meshStandardMaterial', { color: '#87ceeb', transparent: true, opacity: 0.7 })
+        ),
+        // Mouth
+        React.createElement('mesh', { ref: mouthRef, position: [0, 2.15, 0.55], rotation: [Math.PI, 0, 0] },
+          React.createElement('torusGeometry', { args: [0.15, 0.02, 16, 32, Math.PI] }),
+          React.createElement('meshStandardMaterial', { color: '#000000' })
+        ),
+        // Body
+        React.createElement('mesh', { position: [0, 1.2, 0], castShadow: true },
+          React.createElement('cylinderGeometry', { args: [0.5, 0.6, 1.4, 32] }),
+          React.createElement('meshStandardMaterial', { color: clothesColor, roughness: 0.7 })
+        ),
+        // Arms
+        React.createElement('group', { ref: leftArmRef, position: [-0.6, 1.5, 0] },
+          React.createElement('mesh', { position: [0, -0.3, 0], castShadow: true },
+            React.createElement('cylinderGeometry', { args: [0.12, 0.12, 0.6, 16] }),
+            React.createElement('meshStandardMaterial', { color: skinColor })
+          )
+        ),
+        React.createElement('group', { ref: rightArmRef, position: [0.6, 1.5, 0] },
+          React.createElement('mesh', { position: [0, -0.3, 0], castShadow: true },
+            React.createElement('cylinderGeometry', { args: [0.12, 0.12, 0.6, 16] }),
+            React.createElement('meshStandardMaterial', { color: skinColor })
+          )
+        ),
+        // Legs
+        React.createElement('group', { ref: leftLegRef, position: [-0.25, 0.5, 0] },
+          React.createElement('mesh', { position: [0, -0.25, 0], castShadow: true },
+            React.createElement('cylinderGeometry', { args: [0.15, 0.15, 0.5, 16] }),
+            React.createElement('meshStandardMaterial', { color: skinColor })
+          ),
+          React.createElement('mesh', { position: [0, -0.55, 0.1], castShadow: true },
+            React.createElement('boxGeometry', { args: [0.2, 0.1, 0.3] }),
+            React.createElement('meshStandardMaterial', { color: skinColor })
+          )
+        ),
+        React.createElement('group', { ref: rightLegRef, position: [0.25, 0.5, 0] },
+          React.createElement('mesh', { position: [0, -0.25, 0], castShadow: true },
+            React.createElement('cylinderGeometry', { args: [0.15, 0.15, 0.5, 16] }),
+            React.createElement('meshStandardMaterial', { color: skinColor })
+          ),
+          React.createElement('mesh', { position: [0, -0.55, 0.1], castShadow: true },
+            React.createElement('boxGeometry', { args: [0.2, 0.1, 0.3] }),
+            React.createElement('meshStandardMaterial', { color: skinColor })
+          )
+        )
+      );
+    }
+
+    // Character Creation Screen
+    function CharacterCreation({ onStart, initialConfig }) {
+      const [gender, setGender] = useState(initialConfig.gender);
+      const [skinColor, setSkinColor] = useState(initialConfig.skinColor);
+      const [clothesColor, setClothesColor] = useState(initialConfig.clothesColor);
+
+      const skinColors = [
+        { name: 'Light', color: '#ffd7b5' },
+        { name: 'Medium', color: '#e8b896' },
+        { name: 'Tan', color: '#d4a574' },
+        { name: 'Brown', color: '#a67c52' },
+        { name: 'Dark', color: '#8b6f47' }
+      ];
+
+      const clothesColors = [
+        { name: 'Blue', color: '#b3e5fc' },
+        { name: 'Pink', color: '#ffb6c1' },
+        { name: 'Yellow', color: '#ffe66d' },
+        { name: 'Green', color: '#95e1d3' },
+        { name: 'Purple', color: '#d4a5d4' },
+        { name: 'Orange', color: '#ffb88c' }
+      ];
+
+      const floatingEmojis = [
+        { emoji: '⭐', top: '10%', left: '10%', delay: 0 },
+        { emoji: '🎈', top: '20%', left: '80%', delay: 1 },
+        { emoji: '🌈', top: '70%', left: '15%', delay: 2 },
+        { emoji: '⭐', top: '60%', left: '85%', delay: 0.5 },
+        { emoji: '🎈', top: '80%', left: '50%', delay: 1.5 },
+        { emoji: '⭐', top: '15%', left: '50%', delay: 2.5 }
+      ];
+
+      return React.createElement('div', { className: 'character-creation' },
+        floatingEmojis.map((item, index) =>
+          React.createElement('div', {
+            key: index,
+            className: 'floating-emoji',
+            style: {
+              top: item.top,
+              left: item.left,
+              animationDelay: `${item.delay}s`
+            }
+          }, item.emoji)
+        ),
+        React.createElement('div', { className: 'creation-card' },
+          React.createElement('h1', null, '🍼 Baby Room Tour 🏠'),
+          React.createElement('div', { className: 'preview-window' },
+            React.createElement(Canvas, { shadows: true, camera: { position: [0, 2, 5], fov: 50 } },
+              React.createElement('ambientLight', { intensity: 0.6 }),
+              React.createElement('directionalLight', { position: [5, 5, 5], intensity: 0.8 }),
+              React.createElement(BabyModel, {
+                gender: gender,
+                skinColor: skinColor,
+                clothesColor: clothesColor,
+                preview: true
+              })
+            )
+          ),
+          React.createElement('div', { className: 'customization-section' },
+            React.createElement('h3', null, '👶 Choose Gender'),
+            React.createElement('div', { className: 'gender-buttons' },
+              React.createElement('button', {
+                className: `gender-button ${gender === 'boy' ? 'selected' : ''}`,
+                onClick: () => setGender('boy')
+              }, '👦 Boy'),
+              React.createElement('button', {
+                className: `gender-button ${gender === 'girl' ? 'selected' : ''}`,
+                onClick: () => setGender('girl')
+              }, '👧 Girl')
+            )
+          ),
+          React.createElement('div', { className: 'customization-section' },
+            React.createElement('h3', null, '✨ Skin Color'),
+            React.createElement('div', { className: 'color-options' },
+              skinColors.map((option) =>
+                React.createElement('div', {
+                  key: option.color,
+                  className: `color-swatch ${skinColor === option.color ? 'selected' : ''}`,
+                  style: { backgroundColor: option.color },
+                  onClick: () => setSkinColor(option.color),
+                  title: option.name
+                })
+              )
+            )
+          ),
+          React.createElement('div', { className: 'customization-section' },
+            React.createElement('h3', null, '👕 Clothes Color'),
+            React.createElement('div', { className: 'color-options' },
+              clothesColors.map((option) =>
+                React.createElement('div', {
+                  key: option.color,
+                  className: `color-swatch ${clothesColor === option.color ? 'selected' : ''}`,
+                  style: { backgroundColor: option.color },
+                  onClick: () => setClothesColor(option.color),
+                  title: option.name
+                })
+              )
+            )
+          ),
+          React.createElement('button', {
+            className: 'start-button',
+            onClick: () => onStart({ gender, skinColor, clothesColor })
+          }, '🚀 Start Tour!')
+        )
+      );
+    }
+
+    // Simple placeholder for gameplay - Full game would be too large for single file
+    function GameplayScreen({ babyConfig, onBackHome }) {
+      return React.createElement('div', { className: 'gameplay-screen' },
+        React.createElement('div', { style: {
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          textAlign: 'center',
+          padding: '40px'
+        }},
+          React.createElement('div', null,
+            React.createElement('h1', { style: { fontSize: '3rem', marginBottom: '20px' } }, '🎮 Baby Room Tour'),
+            React.createElement('p', { style: { fontSize: '1.5rem', marginBottom: '30px' } },
+              '完整游戏版本太大无法放入单个HTML文件。\n\n请使用开发服务器或构建版本来体验完整功能！'
+            ),
+            React.createElement('p', { style: { fontSize: '1.2rem', marginBottom: '20px', opacity: 0.9 } },
+              '运行 npm run dev 然后访问 http://localhost:5173/'
+            ),
+            React.createElement('button', {
+              className: 'back-button',
+              onClick: onBackHome,
+              style: { position: 'relative', top: 'auto', right: 'auto' }
+            }, '🏠 返回角色创建')
+          )
+        )
+      );
+    }
+
+    // Main App
+    function App() {
+      const [gameStarted, setGameStarted] = useState(false);
+      const [babyConfig, setBabyConfig] = useState({
+        gender: 'boy',
+        skinColor: '#ffd7b5',
+        clothesColor: '#b3e5fc'
+      });
+
+      const handleStartGame = (config) => {
+        setBabyConfig(config);
+        setGameStarted(true);
+      };
+
+      const handleBackHome = () => {
+        setGameStarted(false);
+      };
+
+      return !gameStarted ?
+        React.createElement(CharacterCreation, {
+          onStart: handleStartGame,
+          initialConfig: babyConfig
+        }) :
+        React.createElement(GameplayScreen, {
+          babyConfig: babyConfig,
+          onBackHome: handleBackHome
+        });
+    }
+
+    // Render the app
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App));
+  </script>
+
+  <!-- Babel Standalone for JSX transformation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</body>
+</html>
