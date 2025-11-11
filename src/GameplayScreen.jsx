@@ -149,13 +149,13 @@ function GameplayScreen({ babyConfig, onBackHome }) {
         moving = true
       }
       if (keysPressed.current['ArrowLeft']) {
-        newX -= moveSpeed
-        newRotation = Math.PI / 2
+        newX += moveSpeed
+        newRotation = -Math.PI / 2
         moving = true
       }
       if (keysPressed.current['ArrowRight']) {
-        newX += moveSpeed
-        newRotation = -Math.PI / 2
+        newX -= moveSpeed
+        newRotation = Math.PI / 2
         moving = true
       }
 
