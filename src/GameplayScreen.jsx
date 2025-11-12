@@ -2,9 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import BabyModel from './BabyModel'
-import Bedroom from './Bedroom'
-import LivingRoom from './LivingRoom'
-import Bathroom from './Bathroom'
+import CombinedRoom from './CombinedRoom'
 
 // Initial toys setup
 const initialToys = [
@@ -84,10 +82,8 @@ function GameScene({ babyConfig, toys, babyPosition, babyRotation, isWalking, is
         isCrying={isCrying}
       />
 
-      {/* Rooms */}
-      <Bedroom toys={toys.filter(t => !t.collected)} />
-      <LivingRoom />
-      <Bathroom />
+      {/* Combined Room */}
+      <CombinedRoom toys={toys.filter(t => !t.collected)} />
 
       {/* Camera Controller */}
       <CameraController babyPosition={babyPosition} />
@@ -173,9 +169,9 @@ function GameplayScreen({ babyConfig, onBackHome }) {
         moving = true
       }
 
-      // Bounds checking (adjusted for larger bedroom)
-      newX = Math.max(-12, Math.min(12, newX))
-      newZ = Math.max(-15, Math.min(28, newZ))
+      // Bounds checking (adjusted for combined room)
+      newX = Math.max(-13, Math.min(13, newX))
+      newZ = Math.max(-25, Math.min(55, newZ))
 
       if (moving) {
         setBabyPosition([newX, babyPosition[1], newZ])
