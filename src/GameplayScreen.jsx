@@ -201,12 +201,22 @@ function GameplayScreen({ babyConfig, onBackHome }) {
   }, [babyPosition, babyRotation])
 
   const handlePickupToy = () => {
+    // Transform toy position from room's local space to world space
+    // Room has: scale [1.5, 1.5, 1.5] and rotation [0, Math.PI, 0]
+    const transformToWorld = (localPos) => {
+      // First apply scale
+      const scaled = [localPos[0] * 1.5, localPos[1] * 1.5, localPos[2] * 1.5]
+      // Then apply 180° rotation around Y axis: [x, y, z] -> [-x, y, -z]
+      return [-scaled[0], scaled[1], -scaled[2]]
+    }
+
     // Check if baby is near any toy (within 2 units)
     const nearbyToy = toys.find(toy => {
       if (toy.collected) return false
+      const worldPos = transformToWorld(toy.position)
       const distance = Math.sqrt(
-        Math.pow(toy.position[0] - babyPosition[0], 2) +
-        Math.pow(toy.position[2] - babyPosition[2], 2)
+        Math.pow(worldPos[0] - babyPosition[0], 2) +
+        Math.pow(worldPos[2] - babyPosition[2], 2)
       )
       return distance < 2
     })
@@ -221,10 +231,15 @@ function GameplayScreen({ babyConfig, onBackHome }) {
   }
 
   const handleStoreToys = () => {
-    // Check if baby is near toy chest (position: [6, 0, -3])
+    // Transform toy chest position from room's local space to world space
+    // Local position: [6, 0, -3]
+    // After scale 1.5x: [9, 0, -4.5]
+    // After 180° rotation: [-9, 0, 4.5]
+    const chestWorldPos = [-9, 0, 4.5]
+
     const chestDistance = Math.sqrt(
-      Math.pow(6 - babyPosition[0], 2) +
-      Math.pow(-3 - babyPosition[2], 2)
+      Math.pow(chestWorldPos[0] - babyPosition[0], 2) +
+      Math.pow(chestWorldPos[2] - babyPosition[2], 2)
     )
 
     if (chestDistance < 2 && toysInHand > 0) {
