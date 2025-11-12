@@ -108,27 +108,37 @@ function CombinedRoom({ toys }) {
         </mesh>
       </group>
 
-      {/* Wall Shelf */}
-      <group position={[0, 4, -9.95]}>
+      {/* Wall Shelf on Left Wall */}
+      <group position={[-9.8, 4, -5]} rotation={[0, Math.PI / 2, 0]}>
         <mesh castShadow>
           <boxGeometry args={[3, 0.1, 0.4]} />
           <meshStandardMaterial color="#a67c52" />
         </mesh>
-        {[-1, -0.7, -0.4, -0.1, 0.2].map((x, i) => (
-          <mesh key={i} position={[x, 0.25, 0]} castShadow>
+        {[-1, -0.7, -0.4, -0.1, 0.2].map((z, i) => (
+          <mesh key={i} position={[z, 0.25, 0]} castShadow>
             <boxGeometry args={[0.15, 0.4, 0.3]} />
             <meshStandardMaterial color={['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#d4a5d4'][i]} />
           </mesh>
         ))}
       </group>
 
-      {/* Picture Frames */}
-      <mesh position={[-5, 4.5, -9.95]} castShadow>
+      {/* Picture Frames on Left Wall */}
+      <mesh position={[-9.9, 4.5, -8]} rotation={[0, Math.PI / 2, 0]} castShadow>
         <boxGeometry args={[1, 1.2, 0.05]} />
         <meshStandardMaterial color="#4a3728" />
       </mesh>
-      <mesh position={[5, 4.5, -9.95]} castShadow>
+      <mesh position={[-9.9, 3.5, -2]} rotation={[0, Math.PI / 2, 0]} castShadow>
+        <boxGeometry args={[0.8, 0.8, 0.05]} />
+        <meshStandardMaterial color="#4a3728" />
+      </mesh>
+
+      {/* Picture Frames on Right Wall */}
+      <mesh position={[9.9, 4.5, 5]} rotation={[0, -Math.PI / 2, 0]} castShadow>
         <boxGeometry args={[1, 1.2, 0.05]} />
+        <meshStandardMaterial color="#4a3728" />
+      </mesh>
+      <mesh position={[9.9, 3.5, 15]} rotation={[0, -Math.PI / 2, 0]} castShadow>
+        <boxGeometry args={[1.2, 1, 0.05]} />
         <meshStandardMaterial color="#4a3728" />
       </mesh>
 
@@ -187,11 +197,32 @@ function CombinedRoom({ toys }) {
         <pointLight position={[0, 1.8, 0.5]} intensity={0.8} color="#4a9fd8" distance={6} />
       </group>
 
-      {/* Bookshelf */}
-      <group position={[-8, 0, 2]}>
+      {/* Bookshelf on Left Wall */}
+      <group position={[-9.5, 0, 10]} rotation={[0, Math.PI / 2, 0]}>
         <mesh position={[0, 2, 0]} castShadow>
           <boxGeometry args={[1.2, 4, 0.4]} />
           <meshStandardMaterial color="#8b6f47" />
+        </mesh>
+        {/* Books on shelves */}
+        {[1, 2, 3].map((shelf) => (
+          [...Array(5)].map((_, i) => (
+            <mesh key={`s${shelf}-${i}`} position={[-0.4 + i * 0.2, shelf, 0]} castShadow>
+              <boxGeometry args={[0.12, 0.35, 0.25]} />
+              <meshStandardMaterial color={['#ff6b6b', '#4ecdc4', '#ffe66d', '#95e1d3', '#d4a5d4'][i]} />
+            </mesh>
+          ))
+        ))}
+      </group>
+
+      {/* Clock on Right Wall */}
+      <group position={[9.85, 4, 8]} rotation={[0, -Math.PI / 2, 0]}>
+        <mesh castShadow>
+          <cylinderGeometry args={[0.4, 0.4, 0.1, 32]} />
+          <meshStandardMaterial color="#ffffff" />
+        </mesh>
+        <mesh position={[0, 0, 0.06]} castShadow>
+          <cylinderGeometry args={[0.35, 0.35, 0.02, 32]} />
+          <meshStandardMaterial color="#4a3728" />
         </mesh>
       </group>
 
@@ -236,7 +267,7 @@ function CombinedRoom({ toys }) {
         </mesh>
       </group>
 
-      {/* Sink */}
+      {/* Sink with Mirror on Right Wall */}
       <group position={[6, 0, 32]}>
         <mesh position={[0, 0.8, 0]} castShadow>
           <boxGeometry args={[2, 0.1, 1]} />
@@ -245,6 +276,26 @@ function CombinedRoom({ toys }) {
         <mesh position={[0, 0.75, 0]} castShadow>
           <cylinderGeometry args={[0.3, 0.25, 0.2, 32]} />
           <meshStandardMaterial color="#ffffff" />
+        </mesh>
+      </group>
+
+      {/* Mirror on Right Wall above Sink */}
+      <group position={[9.85, 3, 32]} rotation={[0, -Math.PI / 2, 0]}>
+        <mesh castShadow>
+          <boxGeometry args={[1.5, 2, 0.05]} />
+          <meshStandardMaterial color="#8b6f47" />
+        </mesh>
+        <mesh position={[0, 0, 0.03]}>
+          <planeGeometry args={[1.3, 1.8]} />
+          <meshStandardMaterial color="#b3e5fc" metalness={0.9} roughness={0.1} />
+        </mesh>
+      </group>
+
+      {/* Towel Rack on Left Wall */}
+      <group position={[-9.8, 2, 35]} rotation={[0, Math.PI / 2, 0]}>
+        <mesh castShadow>
+          <cylinderGeometry args={[0.03, 0.03, 1.2, 16]} rotation={[0, 0, Math.PI / 2]} />
+          <meshStandardMaterial color="#c0c0c0" metalness={0.8} />
         </mesh>
       </group>
 
