@@ -48,6 +48,14 @@ function CharacterCreation({ onStart, initialConfig }) {
     onStart({ gender, skinColor, clothesColor, hairStyle })
   }
 
+  const handleHairStyleChange = (style) => {
+    setHairStyle(style)
+    // Auto-start game after selecting hair style
+    setTimeout(() => {
+      onStart({ gender, skinColor, clothesColor, hairStyle: style })
+    }, 800)
+  }
+
   return (
     <div className="character-creation">
       {floatingEmojis.map((item, index) => (
@@ -69,7 +77,7 @@ function CharacterCreation({ onStart, initialConfig }) {
 
         {/* Live Preview */}
         <div className="preview-window">
-          <Canvas shadows camera={{ position: [0, 1.5, 5], fov: 50 }}>
+          <Canvas shadows camera={{ position: [0, 2.2, 5], fov: 50 }}>
             <ambientLight intensity={0.6} />
             <directionalLight position={[5, 5, 5]} intensity={0.8} />
             <pointLight position={[-5, 3, -5]} intensity={0.5} color="#ffeecc" />
@@ -142,7 +150,7 @@ function CharacterCreation({ onStart, initialConfig }) {
               <button
                 key={style.value}
                 className={`gender-button ${hairStyle === style.value ? 'selected' : ''}`}
-                onClick={() => setHairStyle(style.value)}
+                onClick={() => handleHairStyleChange(style.value)}
                 style={{ padding: '10px 20px', fontSize: '1rem' }}
               >
                 {style.name}
