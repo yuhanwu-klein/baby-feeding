@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-function CombinedRoom({ toys }) {
+function CombinedRoom({ toys, onToyClick, onChestClick }) {
   return (
     <group rotation={[0, Math.PI, 0]} scale={[1.5, 1.5, 1.5]}>
       {/* Large Combined Floor - covers all three rooms */}
@@ -98,11 +98,42 @@ function CombinedRoom({ toys }) {
 
       {/* Pink Toy Chest */}
       <group position={[6, 0, -3]}>
-        <mesh position={[0, 0.5, 0]} castShadow>
+        <mesh
+          position={[0, 0.5, 0]}
+          castShadow
+          onClick={(e) => {
+            e.stopPropagation()
+            onChestClick && onChestClick()
+          }}
+          onPointerOver={(e) => {
+            e.stopPropagation()
+            document.body.style.cursor = 'pointer'
+          }}
+          onPointerOut={(e) => {
+            e.stopPropagation()
+            document.body.style.cursor = 'default'
+          }}
+        >
           <boxGeometry args={[1.5, 1, 1]} />
           <meshStandardMaterial color="#ffb6c1" />
         </mesh>
-        <mesh position={[0, 1.05, 0]} rotation={[-0.3, 0, 0]} castShadow>
+        <mesh
+          position={[0, 1.05, 0]}
+          rotation={[-0.3, 0, 0]}
+          castShadow
+          onClick={(e) => {
+            e.stopPropagation()
+            onChestClick && onChestClick()
+          }}
+          onPointerOver={(e) => {
+            e.stopPropagation()
+            document.body.style.cursor = 'pointer'
+          }}
+          onPointerOut={(e) => {
+            e.stopPropagation()
+            document.body.style.cursor = 'default'
+          }}
+        >
           <boxGeometry args={[1.5, 0.1, 1.05]} />
           <meshStandardMaterial color="#ff9db3" />
         </mesh>
@@ -324,11 +355,23 @@ function CombinedRoom({ toys }) {
       </group>
 
       {/* 8 Scattered Toys */}
-      {toys.map((toy) => (
+      {toys.map((toy) => !toy.collected && (
         <mesh
           key={toy.id}
           position={toy.position}
           castShadow
+          onClick={(e) => {
+            e.stopPropagation()
+            onToyClick(toy.id)
+          }}
+          onPointerOver={(e) => {
+            e.stopPropagation()
+            document.body.style.cursor = 'pointer'
+          }}
+          onPointerOut={(e) => {
+            e.stopPropagation()
+            document.body.style.cursor = 'default'
+          }}
         >
           {toy.shape === 'box' && <boxGeometry args={[0.3, 0.3, 0.3]} />}
           {toy.shape === 'sphere' && <sphereGeometry args={[0.2, 16, 16]} />}

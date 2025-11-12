@@ -83,7 +83,7 @@ function GameScene({ babyConfig, toys, babyPosition, babyRotation, isWalking, is
       />
 
       {/* Combined Room */}
-      <CombinedRoom toys={toys.filter(t => !t.collected)} />
+      <CombinedRoom toys={toys} onToyClick={handleToyClick} onChestClick={handleChestClick} />
 
       {/* Camera Controller */}
       <CameraController babyPosition={babyPosition} />
@@ -200,19 +200,43 @@ function GameplayScreen({ babyConfig, onBackHome }) {
     }
   }, [babyPosition, babyRotation])
 
+  // Transform toy position from room's local space to world space
+  // Room has: scale [1.5, 1.5, 1.5] and rotation [0, Math.PI, 0]
+  const transformToWorld = (localPos) => {
+    // First apply scale
+    const scaled = [localPos[0] * 1.5, localPos[1] * 1.5, localPos[2] * 1.5]
+    // Then apply 180° rotation around Y axis: [x, y, z] -> [-x, y, -z]
+    return [-scaled[0], scaled[1], -scaled[2]]
+  }
+
+  const handleToyClick = (toyId) => {
+    const toy = toys.find(t => t.id === toyId)
+    if (!toy || toy.collected) return
+
+    const worldPos = transformToWorld(toy.position)
+    const distance = Math.sqrt(
+      Math.pow(worldPos[0] - babyPosition[0], 2) +
+      Math.pow(worldPos[2] - babyPosition[2], 2)
+    )
+
+    console.log(`Clicked toy ${toyId} - Distance: ${distance.toFixed(2)}`)
+
+    if (distance < 5) {
+      setToys(toys.map(t =>
+        t.id === toyId ? { ...t, collected: true } : t
+      ))
+      setToysInHand(toysInHand + 1)
+      showToast('Toy picked up! 🎉')
+      console.log('Toy picked up!')
+    } else {
+      showToast('Too far away! Walk closer to the toy', false)
+    }
+  }
+
   const handlePickupToy = () => {
     console.log('A key pressed! Baby position:', babyPosition)
 
-    // Transform toy position from room's local space to world space
-    // Room has: scale [1.5, 1.5, 1.5] and rotation [0, Math.PI, 0]
-    const transformToWorld = (localPos) => {
-      // First apply scale
-      const scaled = [localPos[0] * 1.5, localPos[1] * 1.5, localPos[2] * 1.5]
-      // Then apply 180° rotation around Y axis: [x, y, z] -> [-x, y, -z]
-      return [-scaled[0], scaled[1], -scaled[2]]
-    }
-
-    // Check if baby is near any toy (within 3 units - increased from 2)
+    // Check if baby is near any toy (within 3 units)
     const nearbyToy = toys.find(toy => {
       if (toy.collected) return false
       const worldPos = transformToWorld(toy.position)
@@ -234,6 +258,41 @@ function GameplayScreen({ babyConfig, onBackHome }) {
     } else {
       console.log('No toy nearby')
       showToast('No toy nearby', false)
+    }
+  }
+
+  const handleChestClick = () => {
+    // Transform toy chest position from room's local space to world space
+    // Local position: [6, 0, -3]
+    // After scale 1.5x: [9, 0, -4.5]
+    // After 180° rotation: [-9, 0, 4.5]
+    const chestWorldPos = [-9, 0, 4.5]
+
+    const chestDistance = Math.sqrt(
+      Math.pow(chestWorldPos[0] - babyPosition[0], 2) +
+      Math.pow(chestWorldPos[2] - babyPosition[2], 2)
+    )
+
+    console.log(`Clicked chest - Distance: ${chestDistance.toFixed(2)}`)
+
+    if (toysInHand === 0) {
+      showToast('No toys in hand!', false)
+      return
+    }
+
+    if (chestDistance < 5) {
+      const newCollected = toysCollected + toysInHand
+      setToysCollected(newCollected)
+      setToysInHand(0)
+      showToast(`Stored ${toysInHand} toy(s)! 📦`)
+
+      if (newCollected >= 8) {
+        setTimeout(() => {
+          showToast('🎊 Victory! All toys collected! 🎊', true)
+        }, 500)
+      }
+    } else {
+      showToast('Too far away! Walk closer to the toy chest', false)
     }
   }
 
