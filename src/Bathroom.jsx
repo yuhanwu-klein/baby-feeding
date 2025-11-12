@@ -26,17 +26,17 @@ function Bathroom() {
         <meshStandardMaterial color="#fffacd" />
       </mesh>
 
-      {/* Left Wall */}
-      <mesh position={[-10, 5, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+      {/* Left Wall - Removed for better visibility */}
+      {/* <mesh position={[-10, 5, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[20, 10]} />
         <meshStandardMaterial color="#fffacd" />
-      </mesh>
+      </mesh> */}
 
-      {/* Right Wall */}
-      <mesh position={[10, 5, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+      {/* Right Wall - Removed for better visibility */}
+      {/* <mesh position={[10, 5, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[20, 10]} />
         <meshStandardMaterial color="#fffacd" />
-      </mesh>
+      </mesh> */}
 
       {/* Bathtub */}
       <group position={[-6, 0, -7]}>

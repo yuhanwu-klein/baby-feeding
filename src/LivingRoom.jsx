@@ -17,17 +17,17 @@ function LivingRoom() {
         <meshStandardMaterial color="#fff9ed" />
       </mesh>
 
-      {/* Left Wall */}
-      <mesh position={[-10, 5, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+      {/* Left Wall - Removed for better visibility */}
+      {/* <mesh position={[-10, 5, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[20, 10]} />
         <meshStandardMaterial color="#fff9ed" />
-      </mesh>
+      </mesh> */}
 
-      {/* Right Wall */}
-      <mesh position={[10, 5, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+      {/* Right Wall - Removed for better visibility */}
+      {/* <mesh position={[10, 5, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[20, 10]} />
         <meshStandardMaterial color="#fff9ed" />
-      </mesh>
+      </mesh> */}
 
       {/* Large Blue Sofa */}
       <group position={[0, 0, -7]}>
