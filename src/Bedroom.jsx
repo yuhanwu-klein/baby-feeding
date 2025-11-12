@@ -4,7 +4,7 @@ function Bedroom({ toys, onToyCollect }) {
   const roomZ = 0
 
   return (
-    <group position={[0, 0, roomZ]}>
+    <group position={[0, 0, roomZ]} rotation={[0, Math.PI, 0]}>
       {/* Floor */}
       <mesh position={[0, 0, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[20, 20]} />

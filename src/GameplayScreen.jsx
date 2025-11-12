@@ -23,7 +23,7 @@ function CameraController({ babyPosition }) {
 
   useFrame(() => {
     // Third-person camera
-    const cameraOffset = new THREE.Vector3(0, 8, -12)
+    const cameraOffset = new THREE.Vector3(0, 8, 12)
     const targetPosition = new THREE.Vector3(
       babyPosition[0] + cameraOffset.x,
       babyPosition[1] + cameraOffset.y,
@@ -96,8 +96,8 @@ function GameScene({ babyConfig, toys, babyPosition, babyRotation, isWalking, is
 }
 
 function GameplayScreen({ babyConfig, onBackHome }) {
-  const [babyPosition, setBabyPosition] = useState([0, 0, -5])
-  const [babyRotation, setBabyRotation] = useState(0)
+  const [babyPosition, setBabyPosition] = useState([0, 0, 5])
+  const [babyRotation, setBabyRotation] = useState(Math.PI)
   const [isWalking, setIsWalking] = useState(false)
   const [isCrying, setIsCrying] = useState(false)
   const [toys, setToys] = useState(initialToys)
@@ -395,7 +395,7 @@ function GameplayScreen({ babyConfig, onBackHome }) {
       <div className="game-canvas">
         <Canvas
           shadows
-          camera={{ position: [0, 8, -5], fov: 60 }}
+          camera={{ position: [0, 8, 17], fov: 60 }}
           gl={{ shadowMap: { enabled: true, type: THREE.PCFSoftShadowMap } }}
         >
           <GameScene
