@@ -150,7 +150,7 @@ function Bedroom({ toys, onToyCollect }) {
       </group>
 
       {/* Wall Shelf with Books and Teddy */}
-      <group position={[0, 4, -9.8]}>
+      <group position={[0, 4, -9.95]}>
         {/* Shelf */}
         <mesh castShadow>
           <boxGeometry args={[3, 0.1, 0.4]} />
@@ -191,19 +191,19 @@ function Bedroom({ toys, onToyCollect }) {
       </group>
 
       {/* Picture Frames on Wall - Symmetrical */}
-      <mesh position={[-5, 4.5, -9.9]} castShadow>
+      <mesh position={[-5, 4.5, -9.95]} castShadow>
         <boxGeometry args={[1, 1.2, 0.05]} />
         <meshStandardMaterial color="#4a3728" />
       </mesh>
-      <mesh position={[5, 4.5, -9.9]} castShadow>
+      <mesh position={[5, 4.5, -9.95]} castShadow>
         <boxGeometry args={[1, 1.2, 0.05]} />
         <meshStandardMaterial color="#4a3728" />
       </mesh>
-      <mesh position={[-7.5, 3.5, -9.9]} castShadow>
+      <mesh position={[-7.5, 3.5, -9.95]} castShadow>
         <boxGeometry args={[0.8, 0.8, 0.05]} />
         <meshStandardMaterial color="#4a3728" />
       </mesh>
-      <mesh position={[7.5, 3.5, -9.9]} castShadow>
+      <mesh position={[7.5, 3.5, -9.95]} castShadow>
         <boxGeometry args={[0.8, 0.8, 0.05]} />
         <meshStandardMaterial color="#4a3728" />
       </mesh>

@@ -110,7 +110,7 @@ function LivingRoom() {
       </group>
 
       {/* TV and TV Stand */}
-      <group position={[0, 0, -9.5]}>
+      <group position={[0, 0, -9.7]}>
         {/* TV Stand */}
         <mesh position={[0, 0.5, 0]} castShadow>
           <boxGeometry args={[3, 1, 0.8]} />

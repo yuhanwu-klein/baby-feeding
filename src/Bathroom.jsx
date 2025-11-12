@@ -92,11 +92,11 @@ function Bathroom() {
       </group>
 
       {/* Mirror */}
-      <mesh position={[6, 3, -9.9]} castShadow>
+      <mesh position={[6, 3, -9.95]} castShadow>
         <boxGeometry args={[1.5, 2, 0.05]} />
         <meshStandardMaterial color="#8b6f47" />
       </mesh>
-      <mesh position={[6, 3, -9.85]}>
+      <mesh position={[6, 3, -9.92]}>
         <planeGeometry args={[1.3, 1.8]} />
         <meshStandardMaterial color="#b3e5fc" metalness={0.9} roughness={0.1} />
       </mesh>
