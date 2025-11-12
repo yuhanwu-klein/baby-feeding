@@ -201,6 +201,8 @@ function GameplayScreen({ babyConfig, onBackHome }) {
   }, [babyPosition, babyRotation])
 
   const handlePickupToy = () => {
+    console.log('A key pressed! Baby position:', babyPosition)
+
     // Transform toy position from room's local space to world space
     // Room has: scale [1.5, 1.5, 1.5] and rotation [0, Math.PI, 0]
     const transformToWorld = (localPos) => {
@@ -210,7 +212,7 @@ function GameplayScreen({ babyConfig, onBackHome }) {
       return [-scaled[0], scaled[1], -scaled[2]]
     }
 
-    // Check if baby is near any toy (within 2 units)
+    // Check if baby is near any toy (within 3 units - increased from 2)
     const nearbyToy = toys.find(toy => {
       if (toy.collected) return false
       const worldPos = transformToWorld(toy.position)
@@ -218,7 +220,8 @@ function GameplayScreen({ babyConfig, onBackHome }) {
         Math.pow(worldPos[0] - babyPosition[0], 2) +
         Math.pow(worldPos[2] - babyPosition[2], 2)
       )
-      return distance < 2
+      console.log(`Toy ${toy.id} - Local: [${toy.position}], World: [${worldPos}], Distance: ${distance.toFixed(2)}`)
+      return distance < 3
     })
 
     if (nearbyToy) {
@@ -227,6 +230,10 @@ function GameplayScreen({ babyConfig, onBackHome }) {
       ))
       setToysInHand(toysInHand + 1)
       showToast('Toy picked up! 🎉')
+      console.log('Toy picked up!')
+    } else {
+      console.log('No toy nearby')
+      showToast('No toy nearby', false)
     }
   }
 
