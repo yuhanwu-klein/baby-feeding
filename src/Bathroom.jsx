@@ -20,11 +20,11 @@ function Bathroom() {
         ))
       )}
 
-      {/* Back Wall */}
-      <mesh position={[0, 5, -10]} receiveShadow>
+      {/* Back Wall - Removed for open layout */}
+      {/* <mesh position={[0, 5, -10]} receiveShadow>
         <planeGeometry args={[20, 10]} />
         <meshStandardMaterial color="#fffacd" />
-      </mesh>
+      </mesh> */}
 
       {/* Left Wall - Removed for better visibility */}
       {/* <mesh position={[-10, 5, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
