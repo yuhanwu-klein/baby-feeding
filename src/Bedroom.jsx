@@ -17,17 +17,17 @@ function Bedroom({ toys, onToyCollect }) {
         <meshStandardMaterial color="#fff4e0" />
       </mesh>
 
-      {/* Left Wall */}
-      <mesh position={[-10, 5, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+      {/* Left Wall - Removed for better visibility */}
+      {/* <mesh position={[-10, 5, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[20, 10]} />
         <meshStandardMaterial color="#fff4e0" />
-      </mesh>
+      </mesh> */}
 
-      {/* Right Wall */}
-      <mesh position={[10, 5, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
+      {/* Right Wall - Removed for better visibility */}
+      {/* <mesh position={[10, 5, 0]} rotation={[0, -Math.PI / 2, 0]} receiveShadow>
         <planeGeometry args={[20, 10]} />
         <meshStandardMaterial color="#fff4e0" />
-      </mesh>
+      </mesh> */}
 
       {/* Large Bed */}
       <group position={[-5, 0, -7]}>
