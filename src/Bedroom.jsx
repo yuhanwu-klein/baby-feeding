@@ -11,11 +11,11 @@ function Bedroom({ toys, onToyCollect }) {
         <meshStandardMaterial color="#f4d4a8" />
       </mesh>
 
-      {/* Back Wall - Removed for open layout */}
-      {/* <mesh position={[0, 5, -10]} receiveShadow>
+      {/* Back Wall - Added for floating objects */}
+      <mesh position={[0, 5, -10]} receiveShadow>
         <planeGeometry args={[20, 10]} />
         <meshStandardMaterial color="#fff4e0" />
-      </mesh> */}
+      </mesh>
 
       {/* Left Wall - Removed for better visibility */}
       {/* <mesh position={[-10, 5, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
