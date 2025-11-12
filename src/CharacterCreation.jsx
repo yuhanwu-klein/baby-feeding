@@ -77,7 +77,7 @@ function CharacterCreation({ onStart, initialConfig }) {
 
         {/* Live Preview */}
         <div className="preview-window">
-          <Canvas shadows camera={{ position: [0, 2.2, 5], fov: 50 }}>
+          <Canvas shadows camera={{ position: [0, 2.8, 5], fov: 50 }}>
             <ambientLight intensity={0.6} />
             <directionalLight position={[5, 5, 5]} intensity={0.8} />
             <pointLight position={[-5, 3, -5]} intensity={0.5} color="#ffeecc" />

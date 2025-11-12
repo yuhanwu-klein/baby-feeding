@@ -153,23 +153,23 @@ function GameplayScreen({ babyConfig, onBackHome }) {
       let newRotation = babyRotation
 
       if (keysPressed.current['ArrowUp']) {
-        newZ -= moveSpeed
-        newRotation = 0
-        moving = true
-      }
-      if (keysPressed.current['ArrowDown']) {
         newZ += moveSpeed
         newRotation = Math.PI
         moving = true
       }
+      if (keysPressed.current['ArrowDown']) {
+        newZ -= moveSpeed
+        newRotation = 0
+        moving = true
+      }
       if (keysPressed.current['ArrowLeft']) {
-        newX -= moveSpeed
-        newRotation = Math.PI / 2
+        newX += moveSpeed
+        newRotation = -Math.PI / 2
         moving = true
       }
       if (keysPressed.current['ArrowRight']) {
-        newX += moveSpeed
-        newRotation = -Math.PI / 2
+        newX -= moveSpeed
+        newRotation = Math.PI / 2
         moving = true
       }
 
