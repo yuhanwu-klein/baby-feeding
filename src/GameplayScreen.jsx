@@ -22,15 +22,15 @@ function CameraController({ babyPosition }) {
   const { camera } = useThree()
 
   useFrame(() => {
-    // Third-person camera
-    const cameraOffset = new THREE.Vector3(0, 8, 12)
+    // Fixed third-person camera with stable position
+    const cameraOffset = new THREE.Vector3(0, 12, 18)
     const targetPosition = new THREE.Vector3(
       babyPosition[0] + cameraOffset.x,
       babyPosition[1] + cameraOffset.y,
       babyPosition[2] + cameraOffset.z
     )
 
-    camera.position.lerp(targetPosition, 0.1)
+    camera.position.lerp(targetPosition, 0.05)
     camera.lookAt(babyPosition[0], babyPosition[1] + 1, babyPosition[2])
   })
 
@@ -48,29 +48,29 @@ function GameScene({ babyConfig, toys, babyPosition, babyRotation, isWalking, is
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
-        shadow-camera-left={-20}
-        shadow-camera-right={20}
-        shadow-camera-top={20}
-        shadow-camera-bottom={-20}
+        shadow-camera-left={-30}
+        shadow-camera-right={30}
+        shadow-camera-top={30}
+        shadow-camera-bottom={-30}
       />
 
-      {/* Point Lights for warmth and brightness */}
+      {/* Point Lights for warmth and brightness - adjusted for larger room */}
       {/* Bedroom lights */}
-      <pointLight position={[-5, 5, -5]} intensity={0.8} color="#fff5e6" distance={20} />
-      <pointLight position={[5, 5, -5]} intensity={0.8} color="#fff5e6" distance={20} />
+      <pointLight position={[-8, 8, -8]} intensity={1.0} color="#fff5e6" distance={30} />
+      <pointLight position={[8, 8, -8]} intensity={1.0} color="#fff5e6" distance={30} />
 
       {/* Living Room lights */}
-      <pointLight position={[-5, 5, 10]} intensity={0.8} color="#fff5e6" distance={20} />
-      <pointLight position={[5, 5, 10]} intensity={0.8} color="#fff5e6" distance={20} />
+      <pointLight position={[-8, 8, 10]} intensity={1.0} color="#fff5e6" distance={30} />
+      <pointLight position={[8, 8, 10]} intensity={1.0} color="#fff5e6" distance={30} />
 
       {/* Bathroom lights */}
-      <pointLight position={[-5, 5, 20]} intensity={0.8} color="#fff5e6" distance={20} />
-      <pointLight position={[5, 5, 20]} intensity={0.8} color="#fff5e6" distance={20} />
+      <pointLight position={[-8, 8, 20]} intensity={1.0} color="#fff5e6" distance={30} />
+      <pointLight position={[8, 8, 20]} intensity={1.0} color="#fff5e6" distance={30} />
 
       {/* Ceiling lights for overall brightness */}
-      <pointLight position={[0, 8, -5]} intensity={1.0} color="#ffffff" distance={25} />
-      <pointLight position={[0, 8, 10]} intensity={1.0} color="#ffffff" distance={25} />
-      <pointLight position={[0, 8, 20]} intensity={1.0} color="#ffffff" distance={25} />
+      <pointLight position={[0, 12, -8]} intensity={1.2} color="#ffffff" distance={35} />
+      <pointLight position={[0, 12, 10]} intensity={1.2} color="#ffffff" distance={35} />
+      <pointLight position={[0, 12, 20]} intensity={1.2} color="#ffffff" distance={35} />
 
       {/* Baby Character */}
       <BabyModel
@@ -153,29 +153,29 @@ function GameplayScreen({ babyConfig, onBackHome }) {
       let newRotation = babyRotation
 
       if (keysPressed.current['ArrowUp']) {
-        newZ += moveSpeed
-        newRotation = Math.PI
-        moving = true
-      }
-      if (keysPressed.current['ArrowDown']) {
         newZ -= moveSpeed
         newRotation = 0
         moving = true
       }
-      if (keysPressed.current['ArrowLeft']) {
-        newX += moveSpeed
-        newRotation = -Math.PI / 2
+      if (keysPressed.current['ArrowDown']) {
+        newZ += moveSpeed
+        newRotation = Math.PI
         moving = true
       }
-      if (keysPressed.current['ArrowRight']) {
+      if (keysPressed.current['ArrowLeft']) {
         newX -= moveSpeed
         newRotation = Math.PI / 2
         moving = true
       }
+      if (keysPressed.current['ArrowRight']) {
+        newX += moveSpeed
+        newRotation = -Math.PI / 2
+        moving = true
+      }
 
-      // Bounds checking
-      newX = Math.max(-8, Math.min(8, newX))
-      newZ = Math.max(-10, Math.min(28, newZ))
+      // Bounds checking (adjusted for larger bedroom)
+      newX = Math.max(-12, Math.min(12, newX))
+      newZ = Math.max(-15, Math.min(28, newZ))
 
       if (moving) {
         setBabyPosition([newX, babyPosition[1], newZ])
@@ -395,7 +395,7 @@ function GameplayScreen({ babyConfig, onBackHome }) {
       <div className="game-canvas">
         <Canvas
           shadows
-          camera={{ position: [0, 8, 17], fov: 60 }}
+          camera={{ position: [0, 12, 23], fov: 60 }}
           gl={{ shadowMap: { enabled: true, type: THREE.PCFSoftShadowMap } }}
         >
           <GameScene
