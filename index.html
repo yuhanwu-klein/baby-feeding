@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed the Baby Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 90vw;
+            max-width: 800px;
+            height: 80vh;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #webcam-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #webcam {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3;
+            filter: blur(5px);
+        }
+
+        #baby-container {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #baby-image {
+            width: 300px;
+            height: 300px;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+            transition: transform 0.3s ease;
+        }
+
+        #baby-image.eating {
+            transform: scale(1.1) rotate(-5deg);
+            animation: eating 0.5s ease-in-out infinite;
+        }
+
+        #baby-image.happy {
+            transform: scale(1.05);
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes eating {
+            0%, 100% { transform: scale(1.1) rotate(-5deg); }
+            50% { transform: scale(1.15) rotate(5deg); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1.05) translateY(0); }
+            50% { transform: scale(1.1) translateY(-20px); }
+        }
+
+        #expression {
+            font-size: 120px;
+            margin-top: -80px;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
+            z-index: 3;
+        }
+
+        #feedback {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff6b6b;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            z-index: 10;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        #feedback.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+
+        #food-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .food-particle {
+            position: absolute;
+            font-size: 30px;
+            animation: fall 1s ease-in forwards;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-50px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(400px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        #controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .control-btn.active {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+
+        #status {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-label {
+            font-weight: bold;
+            color: #667eea;
+            min-width: 100px;
+        }
+
+        .status-bar {
+            flex: 1;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .status-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            transition: width 0.1s ease;
+        }
+
+        .status-fill.high {
+            background: linear-gradient(90deg, #ff6b6b, #ff8787);
+        }
+
+        #title {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        #hidden-canvas {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            #baby-image {
+                width: 200px;
+                height: 200px;
+            }
+
+            #expression {
+                font-size: 80px;
+                margin-top: -60px;
+            }
+
+            #feedback {
+                font-size: 36px;
+            }
+
+            #title {
+                font-size: 24px;
+                top: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="title">🍼 Feed the Baby</div>
+
+    <div id="game-container">
+        <div id="webcam-container">
+            <video id="webcam" autoplay playsinline></video>
+        </div>
+
+        <div id="baby-container">
+            <img id="baby-image" src="baby.jpg" alt="Baby">
+            <div id="expression">😐</div>
+        </div>
+
+        <div id="feedback"></div>
+        <div id="food-particles"></div>
+
+        <div id="controls">
+            <button class="control-btn" id="start-mic">🎤 Start Mic</button>
+            <button class="control-btn" id="start-webcam">📷 Start Webcam</button>
+        </div>
+
+        <div id="status">
+            <div class="status-item">
+                <span class="status-label">🔊 Sound:</span>
+                <div class="status-bar">
+                    <div class="status-fill" id="sound-level"></div>
+                </div>
+            </div>
+            <div class="status-item">
+                <span class="status-label">⚪ White:</span>
+                <div class="status-bar">
+                    <div class="status-fill" id="white-level"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="hidden-canvas"></canvas>
+
+    <script>
+        // Game state
+        let state = 'neutral'; // 'neutral', 'eating', 'happy'
+        let micActive = false;
+        let webcamActive = false;
+        let audioContext;
+        let analyser;
+        let microphone;
+        let dataArray;
+
+        // DOM elements
+        const babyImage = document.getElementById('baby-image');
+        const expression = document.getElementById('expression');
+        const feedback = document.getElementById('feedback');
+        const foodParticles = document.getElementById('food-particles');
+        const startMicBtn = document.getElementById('start-mic');
+        const startWebcamBtn = document.getElementById('start-webcam');
+        const webcam = document.getElementById('webcam');
+        const hiddenCanvas = document.getElementById('hidden-canvas');
+        const ctx = hiddenCanvas.getContext('2d');
+        const soundLevelBar = document.getElementById('sound-level');
+        const whiteLevelBar = document.getElementById('white-level');
+
+        // Thresholds
+        const SOUND_THRESHOLD = 40; // Adjust based on testing
+        const WHITE_THRESHOLD = 70; // Percentage of white pixels (0-100)
+
+        // Expressions
+        const expressions = {
+            neutral: '😐',
+            eating: '😋',
+            happy: '😊'
+        };
+
+        // Initialize microphone
+        startMicBtn.addEventListener('click', async () => {
+            if (!micActive) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    microphone = audioContext.createMediaStreamSource(stream);
+                    microphone.connect(analyser);
+                    analyser.fftSize = 256;
+                    const bufferLength = analyser.frequencyBinCount;
+                    dataArray = new Uint8Array(bufferLength);
+
+                    micActive = true;
+                    startMicBtn.classList.add('active');
+                    startMicBtn.textContent = '🎤 Mic Active';
+                    detectSound();
+                } catch (err) {
+                    alert('Microphone access denied: ' + err.message);
+                }
+            }
+        });
+
+        // Initialize webcam
+        startWebcamBtn.addEventListener('click', async () => {
+            if (!webcamActive) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    webcam.srcObject = stream;
+                    webcamActive = true;
+                    startWebcamBtn.classList.add('active');
+                    startWebcamBtn.textContent = '📷 Webcam Active';
+                    detectWhite();
+                } catch (err) {
+                    alert('Webcam access denied: ' + err.message);
+                }
+            }
+        });
+
+        // Detect sound level
+        function detectSound() {
+            if (!micActive) return;
+
+            analyser.getByteFrequencyData(dataArray);
+            const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+
+            // Update sound level bar
+            soundLevelBar.style.width = Math.min(100, (average / 128) * 100) + '%';
+
+            if (average > SOUND_THRESHOLD) {
+                if (state !== 'eating') {
+                    changeState('eating');
+                }
+                soundLevelBar.classList.add('high');
+            } else {
+                if (state === 'eating') {
+                    changeState('neutral');
+                }
+                soundLevelBar.classList.remove('high');
+            }
+
+            requestAnimationFrame(detectSound);
+        }
+
+        // Detect white area (tissue)
+        function detectWhite() {
+            if (!webcamActive) return;
+
+            // Draw webcam frame to canvas
+            hiddenCanvas.width = webcam.videoWidth || 640;
+            hiddenCanvas.height = webcam.videoHeight || 480;
+            ctx.drawImage(webcam, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+
+            // Analyze pixels
+            const imageData = ctx.getImageData(0, 0, hiddenCanvas.width, hiddenCanvas.height);
+            const pixels = imageData.data;
+            let whitePixels = 0;
+            const totalPixels = pixels.length / 4;
+            const whiteThreshold = 200; // RGB value threshold for "white"
+
+            for (let i = 0; i < pixels.length; i += 4) {
+                const r = pixels[i];
+                const g = pixels[i + 1];
+                const b = pixels[i + 2];
+                const avg = (r + g + b) / 3;
+
+                if (avg > whiteThreshold) {
+                    whitePixels++;
+                }
+            }
+
+            const whitePercentage = (whitePixels / totalPixels) * 100;
+
+            // Update white level bar
+            whiteLevelBar.style.width = Math.min(100, whitePercentage) + '%';
+
+            if (whitePercentage > WHITE_THRESHOLD) {
+                if (state !== 'happy') {
+                    changeState('happy');
+                }
+                whiteLevelBar.classList.add('high');
+            } else {
+                whiteLevelBar.classList.remove('high');
+            }
+
+            requestAnimationFrame(detectWhite);
+        }
+
+        // Change baby state
+        function changeState(newState) {
+            if (state === newState) return;
+
+            state = newState;
+            expression.textContent = expressions[state];
+            babyImage.className = state;
+
+            switch (state) {
+                case 'eating':
+                    showFeedback('Yum yum! 🍕');
+                    createFoodParticles();
+                    break;
+                case 'happy':
+                    showFeedback('Clean again! ✨');
+                    break;
+                case 'neutral':
+                    // No feedback for neutral
+                    break;
+            }
+        }
+
+        // Show feedback text
+        function showFeedback(text) {
+            feedback.textContent = text;
+            feedback.classList.add('show');
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 1500);
+        }
+
+        // Create food particles animation
+        function createFoodParticles() {
+            const foods = ['🍕', '🍔', '🍟', '🌭', '🍿', '🥐', '🥨', '🥯'];
+            const numParticles = 5;
+
+            for (let i = 0; i < numParticles; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'food-particle';
+                    particle.textContent = foods[Math.floor(Math.random() * foods.length)];
+                    particle.style.left = (Math.random() * 80 + 10) + '%';
+                    particle.style.top = '10%';
+                    foodParticles.appendChild(particle);
+
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 1000);
+                }, i * 100);
+            }
+        }
+
+        // Reset to neutral after a delay
+        let stateTimeout;
+        function changeState(newState) {
+            if (state === newState && newState !== 'neutral') return;
+
+            clearTimeout(stateTimeout);
+            state = newState;
+            expression.textContent = expressions[state];
+            babyImage.className = state;
+
+            switch (state) {
+                case 'eating':
+                    showFeedback('Yum yum! 🍕');
+                    createFoodParticles();
+                    break;
+                case 'happy':
+                    showFeedback('Clean again! ✨');
+                    stateTimeout = setTimeout(() => {
+                        if (state === 'happy') {
+                            changeState('neutral');
+                        }
+                    }, 3000);
+                    break;
+                case 'neutral':
+                    // No feedback for neutral
+                    break;
+            }
+        }
+
+        // Instructions on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                showFeedback('Click buttons to start! 👆');
+            }, 500);
+        });
+    </script>
+</body>
+</html>
